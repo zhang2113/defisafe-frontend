@@ -1,0 +1,45 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+div, span, p, h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+button {
+    border: none;
+    padding: 0;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+// @font-face {
+//   font-family: "NN-N";
+//   src: url("../font/custom-c.ttf");
+// }
+
+#app {
+    height: 100%;
+    overflow: auto;
+}
+
+.fl {
+    float: left;
+}
+
+.clear::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.tc {
+    text-align: center;
+}

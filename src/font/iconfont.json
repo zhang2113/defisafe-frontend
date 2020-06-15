@@ -1,0 +1,30 @@
+{
+  "id": "1818383",
+  "name": "defend",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "3009034",
+      "name": "简单",
+      "font_class": "jiandan",
+      "unicode": "e72d",
+      "unicode_decimal": 59181
+    },
+    {
+      "icon_id": "8221355",
+      "name": "安全",
+      "font_class": "mima",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "14011136",
+      "name": "流动率",
+      "font_class": "liudongshuai",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    }
+  ]
+}
