@@ -4,17 +4,17 @@ import router from './router'
 import store from './store'
 import util from "./util"
 
-import { Select } from 'element-ui';
+import { Select, Input, Option, Dialog, Loading, MessageBox } from 'element-ui';
 
 Vue.component(Select.name, Select);
-// Vue.component(Input.name, Input);
-// Vue.component(Option.name, Option);
-// Vue.component(Dialog.name, Dialog);
-// Vue.use(Loading.directive);
-// Vue.prototype.$loading = Loading.service;
-// Vue.prototype.$msg = MessageBox;
-// Vue.prototype.$alert = MessageBox.alert;
-// Vue.prototype.$prompt = MessageBox.prompt;
+Vue.component(Input.name, Input);
+Vue.component(Option.name, Option);
+Vue.component(Dialog.name, Dialog);
+Vue.use(Loading.directive);
+Vue.prototype.$loading = Loading.service;
+Vue.prototype.$msg = MessageBox;
+Vue.prototype.$alert = MessageBox.alert;
+Vue.prototype.$prompt = MessageBox.prompt;
 
 let web3 = util.initWeb3(null);
 
