@@ -144,6 +144,7 @@
             addr = contract[key].addr;
           }
         }
+
         let ct = new this.$web3.eth.Contract(
           abi,
           addr
@@ -159,7 +160,7 @@
         }
 
         ct.methods
-          .transfer(contract.addr, this.insure)
+          .approve(addr, this.insure)
           .send({ from: this.account })
           .on("transactionHash", hash => {
             this.showAdd = false;
@@ -169,7 +170,7 @@
           .on('receipt', async receipt => {
             setTimeout(async () => {
               try {
-                await this.myContract.methods.startAccountBook(this.account, this.mtype, this.insure).send({ from: this.account });
+                await this.myContract.methods.deposit(this.mtype, this.insure).send({ from: this.account });
                 this.isLoad = false;
                 this.initData();
               } catch (error) {
