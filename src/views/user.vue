@@ -160,7 +160,7 @@
         }
 
         ct.methods
-          .approve(addr, this.insure)
+          .approve(contract.addr, this.insure)
           .send({ from: this.account })
           .on("transactionHash", hash => {
             this.showAdd = false;
