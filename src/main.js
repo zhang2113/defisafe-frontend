@@ -4,20 +4,9 @@ import router from './router'
 import store from './store'
 import util from "./util"
 
-import { Select, Input, Option, Dialog, Loading, MessageBox } from 'element-ui';
-
-Vue.component(Select.name, Select);
-Vue.component(Input.name, Input);
-Vue.component(Option.name, Option);
-Vue.component(Dialog.name, Dialog);
-Vue.use(Loading.directive);
-Vue.prototype.$loading = Loading.service;
-Vue.prototype.$msg = MessageBox;
-Vue.prototype.$alert = MessageBox.alert;
-Vue.prototype.$prompt = MessageBox.prompt;
+import './libs/element.js'
 
 let web3 = util.initWeb3(null);
-
 Vue.prototype.$web3 = web3;
 Vue.prototype.$util = util;
 Vue.config.productionTip = false

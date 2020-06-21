@@ -1,0 +1,82 @@
+.insure {
+  height: 100%;
+  overflow: auto;
+  padding: 0 30px;
+  background: #F0F2F5;
+  .head {
+    padding: 20px 0;
+    img {
+      width: 80px;
+    }
+    .head-right {
+      color: #fff;
+      .account, .net-type {
+        display: inline-block;
+        vertical-align: top;
+        background: #6255A5;
+        padding: 8px 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        &:hover {
+          background: #7869C3;
+          transition: background .15s linear;
+        }
+      }
+      .net-type {
+        margin-right: 10px;
+      }
+    }
+  }
+  .content {
+    .cash-insure {
+      width: 280px;
+      .title {
+        font-size: 16px;
+        color: #141B5A;
+        margin-bottom: 10px;
+      }
+      .cash-list {
+        border-radius: 10px;
+        background: #fff;
+        padding: 15px;
+        .cash-item {
+          padding: 10px 0;
+          font-size: 13px;
+          >* {
+            display: inline-block;
+            vertical-align: middle;
+          }
+        }
+        .cash-btn-group {
+          margin-top: 10px;
+        }
+      }
+    }
+   .account-type {
+    .title {
+      font-size: 16px;
+      color: #141B5A;
+      margin-bottom: 10px;
+    }
+    .account-list {
+      border-radius: 10px;
+        background: #fff;
+        padding: 15px;
+    }
+   }
+   
+  }
+  .dai_modal {
+    >div {
+      margin-bottom: 15px;
+    }
+    button {
+      text-align: center;
+      width: 100%;
+      background: #1aa2e5;
+      color: #FFF;
+      font-size: 18px;
+      padding: 12px 0;
+    }
+  }
+}

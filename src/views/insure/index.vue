@@ -1,10 +1,57 @@
 <template>
-  <div class="user" v-loading="isLoad" :element-loading-text="loadText" element-loading-background="rgba(0, 0, 0, 0.8)">
-    <div class="head">
-      <img class="logo" src="../imgs/logo.png" alt="">
+  <div class="insure" v-loading="isLoad" :element-loading-text="loadText" element-loading-background="rgba(0, 0, 0, 0.8)">
+    <div class="head clear">
+      <div class="fl">
+        <img class="logo" src="../../imgs/logo.png" alt="">
+      </div>
+      <div class="fr head-right">
+        <div class="net-type">{{netType}}</div>
+        <div class="account">
+          <img src="" alt="">
+          <span>aaaaaaasdddfsdsdfs</span>
+        </div>
+      </div>
     </div>
     <div class="content clear">
-      <div class="fl aside left">
+      <div class="account-type fl">
+        <div class="title">我的钱包</div>
+        <div class="account-list">
+            <el-table
+            :data="tbData"
+            style="width: 100%">
+            <el-table-column
+              prop="name"
+              label="资产"
+              width="180">
+            </el-table-column>
+            <el-table-column
+              prop="number"
+              label="数量"
+              width="180">
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <div class="cash-insure fr">
+        <div class="title">我的资料</div>
+        <div class="cash-list">
+          <div class="cash-item">
+            <div>我的投保金额</div>
+            <div>2000</div>
+          </div>
+          <div class="cash-item">
+            <div>投保池金额</div>
+            <div>{{totalMoneyFromRule}}</div>
+          </div>
+          <div class="cash-btn-group">
+            <el-button>提取资产</el-button>
+            <el-button type="primary">我要投保</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="content clear"> -->
+    <!-- <div class="fl aside left">
         <div style="margin: 0" class="l-title">储备状态和配置</div>
         <div id="l_chart"></div>
         <div class="l-title">实时数据</div>
@@ -24,8 +71,8 @@
             <div class="w20 tc">35%</div>
           </div>
         </div>
-      </div>
-      <div class="fl middle">
+      </div> -->
+    <!-- <div class="fl middle">
         <div class="middle_outer">
           <div class="tc m-title">抵押总金额（DAI）</div>
           <div class="tc m-account">
@@ -33,13 +80,13 @@
             <span class="r">DAI</span>
           </div>
         </div>
-      </div>
-      <div class="fl aside right">
-        <!-- <div class="r-box-1">
+      </div> -->
+    <!-- <div class="fl aside right"> -->
+    <!-- <div class="r-box-1">
           <div class="r-title">收益率</div>
           <div id="r_chart"></div>
         </div> -->
-        <div class="r-box-2">
+    <!-- <div class="r-box-2">
           <div class="r-title">我的资料</div>
           <div class="r-data">
             <div class="r-d-item">
@@ -57,12 +104,12 @@
             <button @click="getMoney">提取资产</button>
             <button @click="addMoney">我要投保</button>
           </div>
-        </div>
-      </div>
-    </div>
+        </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
 
     <!-- modal -->
-    <el-dialog title="投保" :visible.sync="showAdd" width="30%">
+    <!-- <el-dialog title="投保" :visible.sync="showAdd" width="30%">
       <div class="dai_modal">
         <div>
           <span>选择通证：</span>
@@ -79,10 +126,10 @@
           <button @click="cofirmAdd">confirm</button>
         </div>
       </div>
-    </el-dialog>
+    </el-dialog> -->
 
     <!-- get model -->
-    <el-dialog title="提取" :visible.sync="showGet" width="30%">
+    <!-- <el-dialog title="提取" :visible.sync="showGet" width="30%">
       <div class="dai_modal">
         <div>
           <span>选择通证：</span>
@@ -95,7 +142,7 @@
           <button @click="cofirmGet">confirm</button>
         </div>
       </div>
-    </el-dialog>
+    </el-dialog> -->
 
   </div>
 </template>
@@ -104,13 +151,24 @@
   import contract from "@/util/contract";
   import Progress from "@/components/Progress";
   import echarts from "echarts";
-  import mtype from "@/util/moneyType";
+  import { moneyType, netIds } from "@/util/type";
   export default {
     components: {
-      Progress
+      // Progress
     },
     data() {
       return {
+        netType: '',
+        tbData: [
+          {
+            name: "BTC",
+            number: 20
+          },
+          {
+            name: "eth",
+            number: 20
+          }
+        ],
         isLoad: false,
         loadText: "",
         web3: null,
@@ -129,17 +187,26 @@
         insure: 0, //投保金额
       };
     },
+    created () {
+      this.initApp();
+      
+    },
     mounted() {
-      this.mtypes = mtype;
+      this.mtypes = moneyType;
       this.initData();
       this.initChart();
     },
     methods: {
+      initApp() {
+        this.netType = netIds[window.ethereum.networkVersion];
+        
+        
+      },
       async cofirmAdd() {
         let abi = '';
         let addr = '';
-        for(let key in this.mtypes) {
-          if(this.mtypes[key] === this.mtype) {
+        for (let key in this.mtypes) {
+          if (this.mtypes[key] === this.mtype) {
             abi = contract[key].abi;
             addr = contract[key].addr;
           }
@@ -220,26 +287,23 @@
         this.showGet = true;
       },
       cofirmGet() {
-        console.log(contract.addr)
-        console.log(this.account)
-        console.log(this.mtype)
         this.myContract.methods.withdrawAssets(this.account, this.mtype).send({ from: this.account })
-        .on("transactionHash", hash => {
+          .on("transactionHash", hash => {
             this.showGet = false;
             this.isLoad = true;
             this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
           })
-        .on('receipt', async receipt => {
-          this.isLoad = false;
-          this.$alert('提取成功', '提示', {
-            confirmButtonText: '确定'
-          });
-          this.initData();
-        })
+          .on('receipt', async receipt => {
+            this.isLoad = false;
+            this.$alert('提取成功', '提示', {
+              confirmButtonText: '确定'
+            });
+            this.initData();
+          })
           .on('error', console.error);
       },
       async initData() {
-        this.account = window.ethereum.selectedAddress;
+        // this.account = window.ethereum.selectedAddress;
         this.mtype = sessionStorage.mtype;
 
         //初始化合约对象
@@ -249,17 +313,15 @@
         );
 
         //投保金额
-        this.moneyFromRule = await this.myContract.methods
-          .getInsuranceTotalMoneyForuser(this.account)
-          .call();
-        console.log(this.moneyFromRule)
-        this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
+        // this.moneyFromRule = await this.myContract.methods
+        //   .getInsuranceTotalMoneyForuser(this.account)
+        //   .call();
+        // this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
 
         //资金池
         this.totalMoneyFromRule = await this.myContract.methods
           .getInsurancePoolBalanceOf()
           .call();
-          console.log(this.totalMoneyFromRule)
         this.totalMoneyFromRule = (this.totalMoneyFromRule / 1e18).toFixed(4);
 
         //抵押总金额（DAI）
@@ -273,141 +335,5 @@
 </script>
 
 <style lang="scss" scoped>
-  .user {
-    height: 100%;
-    overflow: auto;
-    background: url("../imgs/use-bg.png") no-repeat;
-    background-size: cover;
-    background-position: center center;
-    padding: 0 30px;
-    .head {
-      padding: 20px 0;
-      img {
-        width: 100px;
-      }
-    }
-    .content {
-      color: #fff;
-
-      .aside {
-        width: 25%;
-      }
-      .middle {
-        width: 50%;
-        padding: 0 80px;
-        .middle_outer {
-          background: url("../imgs/user-bg-top.png") no-repeat;
-          background-size: 100% 100%;
-          .m-account {
-            padding: 15px 0;
-            font-size: 44px;
-            color: #89f7fe;
-            .r {
-              font-size: 22px;
-            }
-          }
-          .m-title {
-            line-height: 50px;
-          }
-        }
-      }
-      .left {
-        padding: 40px 30px;
-        background: url("../imgs/user-bg1.png") no-repeat;
-        background-size: 100% 100%;
-        .l-title {
-          margin-bottom: 20px;
-          font-size: 15px;
-          border-left: 5px solid #62f9ff;
-          line-height: 1;
-          padding-left: 15px;
-        }
-        #l_chart {
-          width: 100%;
-          height: 250px;
-        }
-        .l-data {
-          padding-left: 20px;
-          .l-d-item {
-            height: 40px;
-            font-size: 13px;
-            >div {
-              display: inline-block;
-              vertical-align: middle;
-            }
-          }
-          .w20 {
-            width: 30%;
-          }
-          .w60 {
-            width: 40%;
-          }
-        }
-      }
-      .right {
-        padding: 30px 15px;
-        .r-title {
-          margin-bottom: 20px;
-          font-size: 15px;
-          border-left: 5px solid #62f9ff;
-          line-height: 1;
-          padding-left: 15px;
-        }
-        .r-box-1 {
-          padding: 40px 30px;
-          background: url("../imgs/user-bg2.png") no-repeat;
-          background-size: 100% 100%;
-          margin-bottom: 30px;
-        }
-        .r-box-2 {
-          padding: 40px 30px;
-          background: url("../imgs/user-bg3.png") no-repeat;
-          background-size: 100% 100%;
-          .rb2-btn {
-            margin-top: 10px;
-            button {
-              color: #fff;
-              border: solid 1px #62f9ff;
-              line-height: 28px;
-              padding: 0 12px;
-              &:last-child {
-                margin-left: 20px;
-                background-color: #1aa2e5;
-                border-color: #1aa2e5;
-              }
-            }
-          }
-        }
-        .r-data {
-          padding-left: 20px;
-          font-size: 13px;
-          line-height: 40px;
-          .r-d-item {
-            .s {
-              font-size: 28px;
-              color: #52ffec;
-              margin-right: 5px;
-            }
-          }
-        }
-        #r_chart {
-          width: 100%;
-          height: 200px;
-        }
-      }
-    }
-    .dai_modal {
-      >div {
-        margin-bottom: 15px;
-      }
-      button {
-        text-align: center;
-        width: 100%;
-        background: #1aa2e5;
-        color: #FFF;
-        font-size: 18px;
-        padding: 12px 0;
-      }
-    }
-  }
+  @import './index.scss';
 </style>

@@ -34,6 +34,10 @@ button {
     float: left;
 }
 
+.fr {
+  float: right;
+}
+
 .clear::after {
     content: "";
     display: block;
@@ -42,4 +46,9 @@ button {
 
 .tc {
     text-align: center;
+}
+
+.il_middle {
+  display: inline-block;
+  vertical-align: middle;
 }

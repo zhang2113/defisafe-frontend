@@ -1,0 +1,43 @@
+.login {
+  position: relative;
+  height: 100%;
+  background: #F0F2F5;
+  .head {
+    padding: 30px;
+    img {
+      width: 30px;
+      margin-right: 10px;
+    }
+    span {
+      color: #2E9EFF;
+    }
+  }
+  .box {
+    position: absolute;
+    top: 30%;
+    left: 0;
+    width: 100%;
+    .title {
+      font-size: 18px;
+      color: #1AA2E5;
+    }
+    .sub-title {
+      color: #888;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .b-foot {
+      padding-top: 15px;
+      text-align: center;
+      button {
+        display: inline-block;
+        padding: 0 20px;
+        font-size: 14px;
+        color: #fff;
+        line-height: 40px;
+        background: #2173e6;
+        border-radius: 15px;
+      }
+    }
+  }
+}
