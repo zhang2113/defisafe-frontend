@@ -1,55 +1,86 @@
 <template>
   <div class="insure" v-loading="isLoad" :element-loading-text="loadText" element-loading-background="rgba(0, 0, 0, 0.8)">
-    <div class="head clear">
-      <div class="fl">
-        <img class="logo" src="../../imgs/logo.png" alt="">
-      </div>
-      <div class="fr head-right">
-        <div class="net-type">{{netType}}</div>
-        <div class="account">
-          <img src="" alt="">
-          <span>aaaaaaasdddfsdsdfs</span>
+    <img width="100%" class="bg-img" src="../../imgs/bg.png" alt="bg">
+    <div class="container">
+      <!-- head -->
+      <div class="head clear">
+        <div class="fl">
+          <img class="logo" src="../../imgs/logo.png" alt="">
+          <span class="text">DefiSafe</span>
         </div>
+        <div class="fr head-right">
+          <div class="net-type">{{netType}}</div>
+          <div class="account">
+            <img src="" alt="">
+            <span>{{account}}</span>
+          </div>
+        </div>
+      </div>
+      <!-- head end -->
+
+      <!-- nav -->
+      <div class="nav">
+        <div class="title">抵押总金额(DAI)</div>
+        <div class="amount">{{cashMoneyFromRule}}</div>
+      </div>
+      <!-- nav end -->
+
+      <div class="content clear">
+        <!-- left-account -->
+        <div class="side-info fl">
+          <div class="cash-insure">
+            <div class="title">我的资料</div>
+            <div class="cash-list">
+              <div class="cash-item clear">
+                <img class="icon" src="../../imgs/icon02.png" alt="">
+                <div class="label">我的投保金额</div>
+                <div class="number">{{moneyFromRule}}</div>
+              </div>
+              <div class="cash-item clear">
+                <img class="icon" src="../../imgs/icon01.png" alt="">
+                <div class="label">投保池金额</div>
+                <div class="number">{{totalMoneyFromRule}}</div>
+              </div>
+              <div class="cash-btn-group">
+                <el-button @click="getMoney">提取资产</el-button>
+                <el-button type="primary" @click="addMoney">我要投保</el-button>
+              </div>
+            </div>
+          </div>
+          <div class="account-type">
+            <div class="title">我的资产</div>
+            <div class="account-list">
+              <el-table :data="tbData" style="width: 100%">
+                <el-table-column prop="name" label="类别">
+                </el-table-column>
+                <el-table-column align='right' prop="number" label="投保金额">
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
+        </div>
+        <!-- end -->
+
+        <!-- right -->
+        <div class="right-introduce fl">
+          <div class="ri-item">
+            <div class="title">产品介绍</div>
+            <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。 </div>
+          </div>
+          <div class="ri-item">
+              <div class="title">产品介绍</div>
+              <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。 </div>
+            </div>
+            <div class="ri-item">
+                <div class="title">产品介绍</div>
+                <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。 </div>
+              </div>
+        </div>
+        <!-- end -->
+
       </div>
     </div>
-    <div class="content clear">
-      <div class="account-type fl">
-        <div class="title">我的钱包</div>
-        <div class="account-list">
-            <el-table
-            :data="tbData"
-            style="width: 100%">
-            <el-table-column
-              prop="name"
-              label="资产"
-              width="180">
-            </el-table-column>
-            <el-table-column
-              prop="number"
-              label="数量"
-              width="180">
-            </el-table-column>
-          </el-table>
-        </div>
-      </div>
-      <div class="cash-insure fr">
-        <div class="title">我的资料</div>
-        <div class="cash-list">
-          <div class="cash-item">
-            <div>我的投保金额</div>
-            <div>2000</div>
-          </div>
-          <div class="cash-item">
-            <div>投保池金额</div>
-            <div>{{totalMoneyFromRule}}</div>
-          </div>
-          <div class="cash-btn-group">
-            <el-button>提取资产</el-button>
-            <el-button type="primary">我要投保</el-button>
-          </div>
-        </div>
-      </div>
-    </div>
+
     <!-- <div class="content clear"> -->
     <!-- <div class="fl aside left">
         <div style="margin: 0" class="l-title">储备状态和配置</div>
@@ -109,7 +140,7 @@
     <!-- </div> -->
 
     <!-- modal -->
-    <!-- <el-dialog title="投保" :visible.sync="showAdd" width="30%">
+    <el-dialog title="投保" :visible.sync="showAdd" width="30%">
       <div class="dai_modal">
         <div>
           <span>选择通证：</span>
@@ -126,10 +157,10 @@
           <button @click="cofirmAdd">confirm</button>
         </div>
       </div>
-    </el-dialog> -->
+    </el-dialog>
 
     <!-- get model -->
-    <!-- <el-dialog title="提取" :visible.sync="showGet" width="30%">
+    <el-dialog title="提取" :visible.sync="showGet" width="30%">
       <div class="dai_modal">
         <div>
           <span>选择通证：</span>
@@ -142,7 +173,7 @@
           <button @click="cofirmGet">confirm</button>
         </div>
       </div>
-    </el-dialog> -->
+    </el-dialog>
 
   </div>
 </template>
@@ -187,9 +218,9 @@
         insure: 0, //投保金额
       };
     },
-    created () {
+    created() {
       this.initApp();
-      
+
     },
     mounted() {
       this.mtypes = moneyType;
@@ -305,7 +336,7 @@
           .on('error', console.error);
       },
       async initData() {
-        // this.account = window.ethereum.selectedAddress;
+        this.account = window.ethereum.selectedAddress;
         this.mtype = sessionStorage.mtype;
 
         //初始化合约对象

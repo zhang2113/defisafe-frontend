@@ -1,8 +1,23 @@
 .home {
+  .head {
+    padding: 0 100px;
+    height: 60px;
+    line-height: 60px;
+    position: relative;
+    z-index: 9;
+    .logo {
+      padding: 10px 0;
+      img {
+        display: block;
+        width: 40px;
+      }
+    }
+  }
   .nav {
     height: 600px;
     width: 100%;
     position: relative;
+    top: -60px;
     background: url("../../imgs/nav-bg.png") no-repeat;
     background-size: cover;
     background-position: center center;
@@ -11,12 +26,7 @@
       display: table-cell;
       vertical-align: middle;
     }
-    .logo {
-      width: 100px;
-      position: absolute;
-      top: 15px;
-      left: 15px;
-    }
+    
     .desc {
       padding: 0 100px;
       text-align: left;

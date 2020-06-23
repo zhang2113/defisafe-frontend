@@ -1,7 +1,14 @@
 <template>
   <div class="home">
+    <div class="head clear">
+      <div class="fl logo">
+          <img src="../../imgs/logo.png" alt />
+      </div>
+      <div class="fr">
+
+      </div>
+    </div>
     <div class="nav">
-      <img class="logo" src="../../imgs/logo.png" alt />
       <div class="nav-outer">
         <div class="desc">
           <h3>Defisafe</h3>
