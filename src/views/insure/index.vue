@@ -199,8 +199,10 @@
     methods: {
       initApp() {
         this.netType = netIds[window.ethereum.networkVersion];
-        
-        
+        //网络切换事件
+        // window.ethereum.on('networkChanged', netId => {
+        //   this.netType = netIds[netId];
+        // });
       },
       async cofirmAdd() {
         let abi = '';
