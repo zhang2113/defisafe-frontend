@@ -8,12 +8,7 @@ export const moneyType = {
   Mana: 105
 }
 
-
 export const netIds = {
   1: 'Main',
-  2: 'Morden',
-  3: 'Ropsten',
-  4: 'Rinkeby',
-  5: 'Goerli',
-  42: 'Kovan'
+  3: 'Ropsten'
 }

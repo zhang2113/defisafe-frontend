@@ -5,11 +5,25 @@
     line-height: 60px;
     position: relative;
     z-index: 9;
+    overflow: hidden;
     .logo {
       padding: 10px 0;
       img {
         display: block;
         width: 40px;
+      }
+    }
+    .menu {
+      .m-item {
+        cursor: pointer;
+        color: #fff;
+        padding: 0 15px;
+        display: inline-block;
+        vertical-align: middle;
+        .git-icon {
+          width: 20px;
+          vertical-align: middle;
+        }
       }
     }
   }
@@ -42,7 +56,10 @@
       text-align: left;
       margin-top: 50px;
       button {
-        padding: 15px 30px;
+        height: 40px;
+        line-height: 40px;
+        width: 120px;
+        text-align: center;
         background: #fff;
         color: #52d3aa;
         font-size: 18px;
@@ -57,7 +74,7 @@
   }
   .content {
     .advantage {
-      width: 1000px;
+      width: 900px;
       margin: 0 auto;
       padding: 100px 0;
       .feature-center {
@@ -89,7 +106,7 @@
         background: #f3f3f3;
       }
       .i_outer {
-        width: 1000px;
+        width: 900px;
         margin: 0 auto;
         padding: 50px 0;
         .i_item {
@@ -122,14 +139,24 @@
   }
   .footer {
     border-top: 1px solid rgb(237, 238, 242);
-    padding: 30px;
-    color: #333;
+    padding: 30px 120px;
+    color: #fff;
+    background: #000;
     .title {
-      font-size: 24px;
+      font-size: 18px;
+      color: #90929C;
     }
     .email {
-      font-size: 16px;
+      font-size: 13px;
       margin-top: 20px;
+      color: #606166;
+    }
+    .fm-list {
+      font-size: 13px;
+      color: #606166;
+      li {
+        line-height: 40px;
+      }
     }
   }
 }

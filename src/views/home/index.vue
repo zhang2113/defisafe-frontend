@@ -4,7 +4,14 @@
       <div class="fl logo">
           <img src="../../imgs/logo.png" alt />
       </div>
-      <div class="fr">
+      <div class="fr menu">
+        <ul>
+          <li class="m-item">白皮书</li>
+          <li class="m-item">联系我们</li>
+          <li class="m-item">
+            <img @click='goGithub' class="git-icon" src="../../imgs/github.png" alt="">
+          </li>
+        </ul>
 
       </div>
     </div>
@@ -73,8 +80,30 @@
     </div>
 
     <div class="footer">
-      <div class="title">联系我们：</div>
-      <div class="email">邮箱：shuishangmusheng107@gmail.com</div>
+      <el-row>
+        <el-col :span="10">
+          <div class="title">联系我们：</div>
+          <div class="email">邮箱：shuishangmusheng107@gmail.com</div>
+        </el-col>
+        <el-col :span="14">
+          <el-row>
+            <el-col :span="12">
+              <ul class="fm-list">
+                <li>关于DefiSafe</li>
+                <li>白皮书</li>
+                <li>FAQ</li>
+                <li>github</li>
+              </ul>
+            </el-col>
+            <el-col :span="12">
+              <ul class="fm-list">
+                <li>隐私政策</li>
+                <li>币圈快讯</li>
+              </ul>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -89,6 +118,9 @@
         } else {
           this.$router.push('/login');
         }
+      },
+      goGithub() {
+        window.location.href = 'https://github.com/defisafe';
       }
     }
   };

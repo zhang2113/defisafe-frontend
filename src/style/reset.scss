@@ -12,6 +12,12 @@ div, span, p, h1, h2, h3 {
     box-sizing: border-box;
 }
 
+ul, li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
 button {
     border: none;
     padding: 0;
@@ -19,11 +25,6 @@ button {
     background: transparent;
     cursor: pointer;
 }
-
-// @font-face {
-//   font-family: "NN-N";
-//   src: url("../font/custom-c.ttf");
-// }
 
 #app {
     height: 100%;
