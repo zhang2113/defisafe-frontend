@@ -15,11 +15,6 @@ const routes = [
     component: () => import( /* webpackChunkName: "insure" */ '../views/insure/index.vue')
   },
   {
-    path: '/rule',
-    name: 'rule',
-    component: () => import( /* webpackChunkName: "rule" */ '../views/rule.vue')
-  },
-  {
     path: '/login',
     name: 'login',
     component: () => import( /* webpackChunkName: "login" */ '../views/login/index.vue')

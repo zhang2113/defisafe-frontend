@@ -1,43 +1,54 @@
 <template>
-    <div class="login">
-      <div class="head">
-        <img class="il_middle" src="../../imgs/logo.png" alt="">
-        <span class="il_middle">DefiSafe</span>
-      </div>
-      <div class="box">
-        <div class="title tc">请链接钱包</div>
-        <div class="sub-title tc">目前平台只支持metamask钱包，请先安装后使用</div>
-        <div class="b-foot">
-          <button class="tc" @click="login">{{hasInstallWallet ? 'Connect Wallet' : 'Install MetaMask'}}</button>
-        </div>
+  <div class="login">
+    <div class="head">
+      <img class="il_middle" src="../../imgs/logo.png" alt="">
+      <span class="il_middle">DefiSafe</span>
+    </div>
+    <div class="box">
+      <div class="title tc">请链接钱包</div>
+      <div class="sub-title tc">目前平台只支持metamask钱包，请先安装后使用</div>
+      <div class="b-foot">
+        <button class="tc" @click="login">{{hasInstallWallet ? 'Connect Wallet' : 'Install MetaMask'}}</button>
       </div>
     </div>
-  </template>
-  
-  <script>
+  </div>
+</template>
+
+<script>
   export default {
     data() {
       return {
         hasInstallWallet: false
       };
     },
-    created () {
+    created() {
       this.initData();
     },
     methods: {
-      initData() {
+      async initData() {
         this.hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
+
+        if (this.hasInstallWallet) {
+          let isLogin = await window.ethereum._metamask.isUnlocked();
+          let netType = window.ethereum.networkVersion;
+
+          // Determine the current network type
+          if ((netType == 1 || netType == 3) && isLogin) {
+            this.$router.replace('/insure');
+          }
+        }
       },
       login() {
         if (!this.hasInstallWallet) {
           window.location.href = 'https://metamask.io/download.html';
           return;
         }
-  
+
         if (!window.ethereum.selectedAddress) {
           window.ethereum
             .enable()
             .then(accounts => {
+              console.log(accounts)
               this.$router.replace("/insure");
             })
             .catch(reason => {
@@ -47,9 +58,8 @@
       }
     }
   };
-  </script>
-  
-  <style lang="scss" scoped>
-    @import './index.scss';
-  </style>
-  
+</script>
+
+<style lang="scss" scoped>
+  @import './index.scss';
+</style>

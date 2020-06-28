@@ -8,9 +8,14 @@
     overflow: hidden;
     .logo {
       padding: 10px 0;
+      line-height: normal;
       img {
-        display: block;
+        vertical-align: bottom;
         width: 40px;
+      }
+      .text {
+        color: #2E9EFF;
+        margin-left: 10px;
       }
     }
     .menu {
@@ -114,19 +119,23 @@
           width: 50%;
           vertical-align: top;
           .title {
-            font-size: 22px;
+            font-size: 18px;
             color: #333;
             margin-bottom: 30px;
+            line-height: 1.8;
           }
           .desc {
             text-indent: 26px;
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
             line-height: 2;
           }
           img {
             width: 100%;
           }
+        }
+        .i_item_img {
+          padding: 0 100px;
         }
         .i_desc {
           padding-right: 30px;

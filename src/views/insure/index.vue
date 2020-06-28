@@ -50,12 +50,35 @@
           <div class="account-type">
             <div class="title">我的资产</div>
             <div class="account-list">
-              <el-table :data="tbData" style="width: 100%">
-                <el-table-column prop="name" label="类别">
-                </el-table-column>
-                <el-table-column align='right' prop="number" label="投保金额">
-                </el-table-column>
-              </el-table>
+              <el-row class="a-item a-head">
+                <el-col :span="20">
+                  <div>我的投保资产</div>
+                </el-col>
+                <el-col :span="4">
+                  <div class="amount">金额</div>
+                </el-col>
+              </el-row>
+
+              <el-row class="a-item">
+                <el-col class="left-name" :span="20">
+                  <img src="../../imgs/BTC.png" alt="">
+                  <span>Bitcoin</span>
+                  <span class="w">(BTC)</span>
+                </el-col>
+                <el-col :span="4">
+                  <div class="amount">12345</div>
+                </el-col>
+              </el-row>
+              <el-row class="a-item">
+                <el-col class="left-name" :span="20">
+                  <img src="../../imgs/BTC.png" alt="">
+                  <span>Bitcoin</span>
+                  <span class="w">(BTC)</span>
+                </el-col>
+                <el-col :span="4">
+                  <div class="amount">12345</div>
+                </el-col>
+              </el-row>
             </div>
           </div>
         </div>
@@ -65,79 +88,24 @@
         <div class="right-introduce fl">
           <div class="ri-item">
             <div class="title">产品介绍</div>
-            <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。 </div>
+            <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。
+            </div>
           </div>
           <div class="ri-item">
-              <div class="title">产品介绍</div>
-              <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。 </div>
+            <div class="title">产品介绍</div>
+            <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。
             </div>
-            <div class="ri-item">
-                <div class="title">产品介绍</div>
-                <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。 </div>
-              </div>
+          </div>
+          <div class="ri-item">
+            <div class="title">产品介绍</div>
+            <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。
+            </div>
+          </div>
         </div>
         <!-- end -->
 
       </div>
     </div>
-
-    <!-- <div class="content clear"> -->
-    <!-- <div class="fl aside left">
-        <div style="margin: 0" class="l-title">储备状态和配置</div>
-        <div id="l_chart"></div>
-        <div class="l-title">实时数据</div>
-        <div class="l-data">
-          <div class="l-d-item">
-            <div class="w20">aave抵押</div>
-            <div class="w60">
-              <Progress :value="65"></Progress>
-            </div>
-            <div class="w20 tc">65%</div>
-          </div>
-          <div class="l-d-item">
-            <div class="w20">Uniswap抵押</div>
-            <div class="w60">
-              <Progress :value="35"></Progress>
-            </div>
-            <div class="w20 tc">35%</div>
-          </div>
-        </div>
-      </div> -->
-    <!-- <div class="fl middle">
-        <div class="middle_outer">
-          <div class="tc m-title">抵押总金额（DAI）</div>
-          <div class="tc m-account">
-            <span>{{cashMoneyFromRule}}</span>
-            <span class="r">DAI</span>
-          </div>
-        </div>
-      </div> -->
-    <!-- <div class="fl aside right"> -->
-    <!-- <div class="r-box-1">
-          <div class="r-title">收益率</div>
-          <div id="r_chart"></div>
-        </div> -->
-    <!-- <div class="r-box-2">
-          <div class="r-title">我的资料</div>
-          <div class="r-data">
-            <div class="r-d-item">
-              <span>我的投保金额：</span>
-              <span class="s">{{moneyFromRule}}</span>
-              <span>DAI</span>
-            </div>
-            <div class="r-d-item">
-              <span>投保池总金额：</span>
-              <span class="s">{{totalMoneyFromRule}}</span>
-              <span>DAI</span>
-            </div>
-          </div>
-          <div class="rb2-btn tc">
-            <button @click="getMoney">提取资产</button>
-            <button @click="addMoney">我要投保</button>
-          </div>
-        </div> -->
-    <!-- </div> -->
-    <!-- </div> -->
 
     <!-- modal -->
     <el-dialog title="投保" :visible.sync="showAdd" width="30%">
@@ -180,13 +148,8 @@
 
 <script>
   import contract from "@/util/contract";
-  import Progress from "@/components/Progress";
-  import echarts from "echarts";
   import { moneyType, netIds } from "@/util/type";
   export default {
-    components: {
-      // Progress
-    },
     data() {
       return {
         netType: '',
@@ -220,16 +183,24 @@
     },
     created() {
       this.initApp();
-
     },
     mounted() {
       this.mtypes = moneyType;
       this.initData();
-      this.initChart();
     },
     methods: {
       initApp() {
-        this.netType = netIds[window.ethereum.networkVersion];
+        // init web3 onject
+        this.web3 = this.$util.initWeb3(null);
+
+        let netType = window.ethereum.networkVersion;
+
+        if (netType != 1 && netType != 3) {
+          this.$router.push('/login');
+        }
+
+        this.netType = netIds[netType];
+        console.log(window.ethereum.networkVersion)
         //网络切换事件
         // window.ethereum.on('networkChanged', netId => {
         //   this.netType = netIds[netId];
@@ -245,7 +216,7 @@
           }
         }
 
-        let ct = new this.$web3.eth.Contract(
+        let ct = new this.web3.eth.Contract(
           abi,
           addr
         );
@@ -280,39 +251,6 @@
           })
           .on('error', console.error);
       },
-      initChart() {
-        this.leftChart = echarts.init(document.getElementById("l_chart"));
-        // this.rightChart = echarts.init(document.getElementById("r_chart"));
-
-        this.leftChart.setOption({
-          series: [
-            {
-              name: "访问来源",
-              type: "pie",
-              radius: ["50%", "70%"],
-              avoidLabelOverlap: false,
-              label: {
-                show: false,
-                position: "center"
-              },
-              emphasis: {
-                label: {
-                  show: true,
-                  fontSize: "30",
-                  fontWeight: "bold"
-                }
-              },
-              labelLine: {
-                show: false
-              },
-              data: [
-                { value: 65, name: "aave抵押" },
-                { value: 35, name: "Link抵押" }
-              ]
-            }
-          ]
-        });
-      },
       addMoney() {
         this.showAdd = true;
       },
@@ -340,16 +278,16 @@
         this.mtype = sessionStorage.mtype;
 
         //初始化合约对象
-        this.myContract = new this.$web3.eth.Contract(
+        this.myContract = new this.web3.eth.Contract(
           contract.abi,
           contract.addr
         );
 
         //投保金额
-        // this.moneyFromRule = await this.myContract.methods
-        //   .getInsuranceTotalMoneyForuser(this.account)
-        //   .call();
-        // this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
+        this.moneyFromRule = await this.myContract.methods
+          .getInsuranceTotalMoneyForuser(this.account)
+          .call();
+        this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
 
         //资金池
         this.totalMoneyFromRule = await this.myContract.methods
