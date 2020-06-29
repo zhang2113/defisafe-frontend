@@ -12,7 +12,7 @@
           <div class="net-type">{{netType}}</div>
           <div class="account">
             <img src="" alt="">
-            <span>{{account}}</span>
+            <span>{{account.slice(0, 6) + '...' + account.slice(-1, -4)}}</span>
           </div>
         </div>
       </div>
@@ -122,6 +122,11 @@
           <el-input style="width: 220px" v-model="insure" placeholder="请输入投保金额"></el-input>
         </div>
         <div>
+          <span>投保比例：</span>
+          <el-input style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio" placeholder="请输入投保比例"></el-input>
+          <span>%</span>
+        </div>
+        <div>
           <button @click="cofirmAdd">confirm</button>
         </div>
       </div>
@@ -147,12 +152,14 @@
 </template>
 
 <script>
+  import Web3 from "web3";
   import contract from "@/util/contract";
   import { moneyType, netIds } from "@/util/type";
   export default {
     data() {
       return {
         netType: '',
+        insureRatio: 5,
         tbData: [
           {
             name: "BTC",
@@ -167,7 +174,7 @@
         loadText: "",
         web3: null,
         mtypes: null,
-        mtype: 100, //通证
+        mtype: 1, //通证
         account: "",
         money: 0,
         moneyFromRule: 0,
@@ -186,21 +193,29 @@
     },
     mounted() {
       this.mtypes = moneyType;
-      this.initData();
+      this.getData();
     },
     methods: {
+      initWeb3() {
+        if (window.web3) {
+          return new Web3(window.web3.currentProvider);
+        } else {
+          return new Web3(
+            new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/0xdbc877878b6653307c98c6e9006aef29ae8cac06")
+          )
+        }
+      },
       initApp() {
         // init web3 onject
-        this.web3 = this.$util.initWeb3(null);
-
+        this.web3 = this.initWeb3();
+        this.account = window.ethereum.selectedAddress;
         let netType = window.ethereum.networkVersion;
+        this.netType = netIds[netType];
 
         if (netType != 1 && netType != 3) {
           this.$router.push('/login');
         }
 
-        this.netType = netIds[netType];
-        console.log(window.ethereum.networkVersion)
         //网络切换事件
         // window.ethereum.on('networkChanged', netId => {
         //   this.netType = netIds[netId];
@@ -220,16 +235,19 @@
           abi,
           addr
         );
-
+        console.log('aaaa',addr);
         let balance = await ct.methods.balanceOf(this.account).call();
-
-        if (balance < this.insure) {
+        console.log('balance', balance);
+        console.log('balance2', this.insure);
+        if (+balance < +this.insure) {
           this.$alert('余额不足', '提示', {
             confirmButtonText: '确定'
           });
           return;
         }
-
+        console.log(111111)
+  console.log(contract.addr)
+  console.log(this.insure)
         ct.methods
           .approve(contract.addr, this.insure)
           .send({ from: this.account })
@@ -241,9 +259,9 @@
           .on('receipt', async receipt => {
             setTimeout(async () => {
               try {
-                await this.myContract.methods.deposit(this.mtype, this.insure).send({ from: this.account });
+                await this.myContract.methods.deposit(this.mtype, this.insure, addr, this.insureRatio).send({ from: this.account });
                 this.isLoad = false;
-                this.initData();
+                this.getData();
               } catch (error) {
                 this.isLoad = false;
               }
@@ -269,37 +287,44 @@
             this.$alert('提取成功', '提示', {
               confirmButtonText: '确定'
             });
-            this.initData();
+            this.getData();
           })
           .on('error', console.error);
       },
-      async initData() {
-        this.account = window.ethereum.selectedAddress;
-        this.mtype = sessionStorage.mtype;
-
-        //初始化合约对象
+      async getData() {
+        //Web3 Contract Object
         this.myContract = new this.web3.eth.Contract(
           contract.abi,
           contract.addr
         );
 
-        //投保金额
+        //Insure Amount
         this.moneyFromRule = await this.myContract.methods
           .getInsuranceTotalMoneyForuser(this.account)
           .call();
         this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
 
-        //资金池
+        //Capital Pool
         this.totalMoneyFromRule = await this.myContract.methods
           .getInsurancePoolBalanceOf()
           .call();
         this.totalMoneyFromRule = (this.totalMoneyFromRule / 1e18).toFixed(4);
 
-        //抵押总金额（DAI）
+        //Case Pledge
         this.cashMoneyFromRule = await this.myContract.methods
           .getAssetsTotalForPlatform()
           .call();
         this.cashMoneyFromRule = (this.cashMoneyFromRule / 1e18).toFixed(4);
+
+        //Get details of my assets
+        this.getMyInsureDetail();
+      },
+      getMyInsureDetail() {
+        this.myContract.methods.getTokenPoolUserBalanceOf().call().then(function (result) {
+          console.log(result);
+        }).catch(err => {
+          console.err(err);
+        })
       }
     }
   };

@@ -32,21 +32,21 @@
       <!-- advantage -->
       <div class="advantage clear">
         <div class="feature-center">
-          <i class="iconfont iconjiandan"></i>
+          <img src="../../imgs/simple-icon.png" alt="">
 
           <h3>simple</h3>
           <p>This is a template for Cloud Sandbox Lab</p>
         </div>
 
         <div class="feature-center">
-          <i class="iconfont iconmima"></i>
+          <img src="../../imgs/safe-icon.png" alt="">
 
           <h3>safe</h3>
           <p>This is a template for Cloud Sandbox Lab</p>
         </div>
 
         <div class="feature-center">
-          <i class="iconfont iconliudongshuai"></i>
+          <img src="../../imgs/flow-icon.png" alt="">
 
           <h3>flow</h3>
           <p>This is a template for Cloud Sandbox Lab</p>
@@ -59,7 +59,7 @@
           <div class="i_item i_desc">
             <div class="title">Defisafe是完全去中心化的协议，通过智能合约为人们提供便捷的资产风险对冲工具</div>
             <div class="desc">Defisafe通过智能合约成立风险资金池，让使用者享有价格上涨带来的增值，分担价格下跌时资产缩水带来的风险。</div>
-            <div class="desc">Defisafe为数字资产投资者提供一个便捷开放的无门槛的金融市场，使人们可以通过智能合约可信代码高效地进行交互，而不必依赖第三方担保实体。
+            <div class="desc">Defisafe为数字资产投资者提供一个便捷开放的无门槛的金融市场，人们可以通过智能合约可信代码高效地进行交互，而不必依赖第三方担保实体。
             </div>
           </div>
           <div class="i_item i_item_img">
