@@ -59,26 +59,17 @@
                 </el-col>
               </el-row>
 
-              <el-row class="a-item">
+              <el-row v-for='item in useInsureDesc' :key='item.type' class="a-item">
                 <el-col class="left-name" :span="20">
-                  <img src="../../imgs/BTC.png" alt="">
-                  <span>Bitcoin</span>
-                  <span class="w">(BTC)</span>
+                  <img :src="tokenIcon[item.type]" alt="">
+                  <span>{{item.type}}</span>
+                  <!-- <span class="w">(BTC)</span> -->
                 </el-col>
                 <el-col :span="4">
-                  <div class="amount">12345</div>
+                  <div class="amount">{{item.amount}}</div>
                 </el-col>
               </el-row>
-              <el-row class="a-item">
-                <el-col class="left-name" :span="20">
-                  <img src="../../imgs/BTC.png" alt="">
-                  <span>Bitcoin</span>
-                  <span class="w">(BTC)</span>
-                </el-col>
-                <el-col :span="4">
-                  <div class="amount">12345</div>
-                </el-col>
-              </el-row>
+              
             </div>
           </div>
         </div>
@@ -112,11 +103,12 @@
       <div class="dai_modal">
         <div>
           <span>选择通证：</span>
-          <el-select style="width: 220px" v-model="mtype" placeholder="请选择">
+          <el-select @change='changeToken' style="width: 220px" v-model="mtype" placeholder="请选择">
             <el-option v-for="(value, name) in mtypes" :key="name" :label="name" :value="value">
             </el-option>
           </el-select>
         </div>
+        <div>{{currentToken}}</div>
         <div>
           <span>投保金额：</span>
           <el-input style="width: 220px" v-model="insure" placeholder="请输入投保金额"></el-input>
@@ -153,23 +145,16 @@
 
 <script>
   import Web3 from "web3";
+  import tokenIcon from '@/imgs/token';
   import contract from "@/util/contract";
   import { moneyType, netIds } from "@/util/type";
   export default {
     data() {
       return {
+        tokenIcon: tokenIcon,
         netType: '',
         insureRatio: 5,
-        tbData: [
-          {
-            name: "BTC",
-            number: 20
-          },
-          {
-            name: "eth",
-            number: 20
-          }
-        ],
+        currentToken: 0,
         isLoad: false,
         loadText: "",
         web3: null,
@@ -186,6 +171,7 @@
         showAdd: false,
         showGet: false,
         insure: 0, //投保金额
+        useInsureDesc: [],
       };
     },
     created() {
@@ -206,20 +192,14 @@
         }
       },
       initApp() {
-        // init web3 onject
-        this.web3 = this.initWeb3();
         this.account = window.ethereum.selectedAddress;
         let netType = window.ethereum.networkVersion;
         this.netType = netIds[netType];
-
         if (netType != 1 && netType != 3) {
           this.$router.push('/login');
+          return;
         }
-
-        //网络切换事件
-        // window.ethereum.on('networkChanged', netId => {
-        //   this.netType = netIds[netId];
-        // });
+        this.web3 = this.initWeb3();
       },
       async cofirmAdd() {
         let abi = '';
@@ -235,21 +215,18 @@
           abi,
           addr
         );
-        console.log('aaaa',addr);
-        let balance = await ct.methods.balanceOf(this.account).call();
-        console.log('balance', balance);
-        console.log('balance2', this.insure);
-        if (+balance < +this.insure) {
+        if (this.currentToken < parseFloat(this.insure)) {
           this.$alert('余额不足', '提示', {
             confirmButtonText: '确定'
           });
           return;
         }
-        console.log(111111)
-  console.log(contract.addr)
-  console.log(this.insure)
+        
+        let insureAmount = this.insure * 1e18 + '';
+        console.log(insureAmount)
+
         ct.methods
-          .approve(contract.addr, this.insure)
+          .approve(contract.addr, insureAmount)
           .send({ from: this.account })
           .on("transactionHash", hash => {
             this.showAdd = false;
@@ -259,7 +236,7 @@
           .on('receipt', async receipt => {
             setTimeout(async () => {
               try {
-                await this.myContract.methods.deposit(this.mtype, this.insure, addr, this.insureRatio).send({ from: this.account });
+                await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account });
                 this.isLoad = false;
                 this.getData();
               } catch (error) {
@@ -269,7 +246,26 @@
           })
           .on('error', console.error);
       },
+      findKeyByValue(obj, val) {
+        for(let key in obj) {
+          if(obj[key] == val) {
+            return key;
+          }
+        }
+      },
+      getUserToken() {
+        let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
+        let ct = new this.web3.eth.Contract(
+          contract[contractKey]['abi'],
+          contract[contractKey]['addr']
+        );
+        ct.methods.balanceOf(this.account).call().then(res => {
+          console.log('bbb', res);
+          this.currentToken = (res / 1e18).toFixed(4);
+        });
+      },
       addMoney() {
+        this.getUserToken();
         this.showAdd = true;
       },
       getMoney() {
@@ -292,6 +288,7 @@
           .on('error', console.error);
       },
       async getData() {
+        this.useInsureDesc = [];
         //Web3 Contract Object
         this.myContract = new this.web3.eth.Contract(
           contract.abi,
@@ -319,12 +316,23 @@
         //Get details of my assets
         this.getMyInsureDetail();
       },
-      getMyInsureDetail() {
-        this.myContract.methods.getTokenPoolUserBalanceOf().call().then(function (result) {
-          console.log(result);
-        }).catch(err => {
-          console.err(err);
-        })
+      getMyInsureDetail(index = 0) {
+        let typeArr = Object.keys(this.mtypes);
+        if (index < typeArr.length) {
+          this.myContract.methods.getTokenPoolUserBalanceOf(this.account, this.mtypes[typeArr[index]]).call().then(result => {
+            // console.log(typeArr[index], result);
+            this.useInsureDesc.push({
+              type: typeArr[index],
+              amount: result
+            });
+            this.getMyInsureDetail(index + 1);
+          }).catch(err => {
+            console.error(err);
+          })
+        }
+      },
+      changeToken() {
+        this.getUserToken();
       }
     }
   };

@@ -1,5 +1,5 @@
 export default {
-  addr: "0x39df36798877a4117ed06af9114731d0b8b2f60a",
+  addr: "0x93be1eea6b51082155e0b0088870f37d0c792680",
   abi: [
     {
       "inputs": [
@@ -270,25 +270,6 @@ export default {
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_name",
-          "type": "address"
-        }
-      ],
-      "name": "getInsuranceTotalMoneyForuser",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "getMarginGuaranteeState",
       "outputs": [
@@ -334,19 +315,6 @@ export default {
         }
       ],
       "name": "getTokenPrice",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getUsersTotalForPlatform",
       "outputs": [
         {
           "internalType": "uint256",
@@ -497,6 +465,24 @@ export default {
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_name",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenType",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawAssets",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -615,24 +601,6 @@ export default {
       "type": "fallback"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_name",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_tokenType",
-          "type": "uint256"
-        }
-      ],
-      "name": "withdrawAssets",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "stateMutability": "payable",
       "type": "receive"
     },
@@ -644,6 +612,19 @@ export default {
           "internalType": "address",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAssetsTotalForPlatform_ever",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -664,7 +645,52 @@ export default {
     },
     {
       "inputs": [],
+      "name": "getInsuranceCountForPlatform",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getInsuranceCountForPlatform_ever",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "getInsurancePoolBalanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_name",
+          "type": "address"
+        }
+      ],
+      "name": "getInsuranceTotalMoneyForuser",
       "outputs": [
         {
           "internalType": "uint256",
@@ -708,6 +734,19 @@ export default {
         }
       ],
       "name": "getTokenPoolUserBalanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getUsersTotalForPlatform",
       "outputs": [
         {
           "internalType": "uint256",
