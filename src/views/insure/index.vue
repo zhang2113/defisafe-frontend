@@ -220,6 +220,8 @@
           if (this.mtypes[key] === this.mtype) {
             abi = contract[key].abi;
             addr = contract[key].addr;
+            console.log(key+ 'abi', abi);
+        console.log(key+ 'addr', addr);
           }
         }
 
@@ -227,6 +229,7 @@
           abi,
           addr
         );
+        
         if (this.currentToken < parseFloat(this.insure)) {
           this.$alert('余额不足', '提示', {
             confirmButtonText: '确定'
@@ -245,26 +248,65 @@
             this.isLoad = false;
           }
         } else {
-          ct.methods
-            .approve(contract.addr, insureAmount)
-            .send({ from: this.account })
-            .on("transactionHash", hash => {
-              this.showAdd = false;
-              this.isLoad = true;
-              this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
-            })
-            .on('receipt', async receipt => {
-              setTimeout(async () => {
-                try {
-                  await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account, value: insureAmount });
-                  this.isLoad = false;
-                  this.getData();
-                } catch (error) {
-                  this.isLoad = false;
-                }
-              }, 300);
-            })
-            .on('error', console.error);
+
+          ct.methods.allowance(this.account, contract.addr).call({ from: this.account }).then(res => {
+            console.log('3333', res);
+            if (res != 0) {
+              ct.methods
+                .approve(contract.addr, 0)
+                .send({ from: this.account })
+                .on("transactionHash", hash => {
+                  this.showAdd = false;
+                  this.isLoad = true;
+                  this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
+                })
+                .on('receipt', async receipt => {
+                  ct.methods
+                    .approve(contract.addr, insureAmount)
+                    .send({ from: this.account })
+                    .on("transactionHash", hash => {
+                      this.showAdd = false;
+                      this.isLoad = true;
+                      this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
+                    })
+                    .on('receipt', async receipt => {
+                      setTimeout(async () => {
+                        try {
+                          await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+                          this.isLoad = false;
+                          this.getData();
+                        } catch (error) {
+                          this.isLoad = false;
+                        }
+                      }, 300);
+                    })
+                    .on('error', console.error);
+                })
+                .on('error', console.error);
+            } else {
+              ct.methods
+                    .approve(contract.addr, insureAmount)
+                    .send({ from: this.account })
+                    .on("transactionHash", hash => {
+                      this.showAdd = false;
+                      this.isLoad = true;
+                      this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
+                    })
+                    .on('receipt', async receipt => {
+                      setTimeout(async () => {
+                        try {
+                          await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+                          this.isLoad = false;
+                          this.getData();
+                        } catch (error) {
+                          this.isLoad = false;
+                        }
+                      }, 300);
+                    })
+                    .on('error', console.error);
+            }
+          });
+
         }
       },
       findKeyByValue(obj, val) {
@@ -275,7 +317,7 @@
         }
       },
       getUserToken() {
-        if(this.mtype == 1) {
+        if (this.mtype == 1) {
           //eth
           this.web3.eth.getBalance(this.account).then(res => {
             this.currentToken = (res / 1e18).toFixed(4);
