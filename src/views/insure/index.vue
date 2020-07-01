@@ -9,10 +9,13 @@
           <span class="text">DefiSafe</span>
         </div>
         <div class="fr head-right">
-          <div class="net-type">{{netType}}</div>
+          <div class="net-type">
+            {{netType}}
+          </div>
           <div class="account">
-            <img src="" alt="">
-            <span>{{account.slice(0, 6) + '...' + account.slice(-1, -4)}}</span>
+            <div>
+              {{account.slice(0, 6) + '...' + account.slice(-1, -4)}}
+            </div>
           </div>
         </div>
       </div>
@@ -69,7 +72,7 @@
                   <div class="amount">{{item.amount}}</div>
                 </el-col>
               </el-row>
-              
+
             </div>
           </div>
         </div>
@@ -200,6 +203,15 @@
           return;
         }
         this.web3 = this.initWeb3();
+
+        window.ethereum.on('accountsChanged', accounts => {
+          if (!accounts.length) {
+            this.$router.push('/login');
+          } else {
+            this.account = window.ethereum.selectedAddress;
+            this.getData && this.getData();
+          }
+        })
       },
       async cofirmAdd() {
         let abi = '';
@@ -221,39 +233,57 @@
           });
           return;
         }
-        
-        let insureAmount = this.insure * 1e18 + '';
-        console.log(insureAmount)
 
-        ct.methods
-          .approve(contract.addr, insureAmount)
-          .send({ from: this.account })
-          .on("transactionHash", hash => {
-            this.showAdd = false;
-            this.isLoad = true;
-            this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
-          })
-          .on('receipt', async receipt => {
-            setTimeout(async () => {
-              try {
-                await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account });
-                this.isLoad = false;
-                this.getData();
-              } catch (error) {
-                this.isLoad = false;
-              }
-            }, 300);
-          })
-          .on('error', console.error);
+        let insureAmount = this.insure * 1e18 + '';
+
+        if (this.mtype == 1) {
+          try {
+            await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+            this.isLoad = false;
+            this.getData();
+          } catch (error) {
+            this.isLoad = false;
+          }
+        } else {
+          ct.methods
+            .approve(contract.addr, insureAmount)
+            .send({ from: this.account })
+            .on("transactionHash", hash => {
+              this.showAdd = false;
+              this.isLoad = true;
+              this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
+            })
+            .on('receipt', async receipt => {
+              setTimeout(async () => {
+                try {
+                  await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+                  this.isLoad = false;
+                  this.getData();
+                } catch (error) {
+                  this.isLoad = false;
+                }
+              }, 300);
+            })
+            .on('error', console.error);
+        }
       },
       findKeyByValue(obj, val) {
-        for(let key in obj) {
-          if(obj[key] == val) {
+        for (let key in obj) {
+          if (obj[key] == val) {
             return key;
           }
         }
       },
       getUserToken() {
+        if(this.mtype == 1) {
+          //eth
+          this.web3.eth.getBalance(this.account).then(res => {
+            this.currentToken = (res / 1e18).toFixed(4);
+          });
+          return;
+        }
+
+
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = new this.web3.eth.Contract(
           contract[contractKey]['abi'],
@@ -290,10 +320,13 @@
       async getData() {
         this.useInsureDesc = [];
         //Web3 Contract Object
-        this.myContract = new this.web3.eth.Contract(
-          contract.abi,
-          contract.addr
-        );
+        if (!this.myContract) {
+          this.myContract = new this.web3.eth.Contract(
+            contract.abi,
+            contract.addr
+          );
+
+        }
 
         //Insure Amount
         this.moneyFromRule = await this.myContract.methods
@@ -323,7 +356,7 @@
             // console.log(typeArr[index], result);
             this.useInsureDesc.push({
               type: typeArr[index],
-              amount: result
+              amount: (result / 1e18).toFixed(4)
             });
             this.getMyInsureDetail(index + 1);
           }).catch(err => {

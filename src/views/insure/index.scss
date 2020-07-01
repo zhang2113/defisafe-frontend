@@ -26,17 +26,36 @@
       .account, .net-type {
         display: inline-block;
         vertical-align: top;
-        background: #6255A5;
-        padding: 8px 15px;
-        border-radius: 10px;
+        height: 36px;
+        line-height: 36px;
+        font-size: 16px;
         cursor: pointer;
-        &:hover {
-          background: #7869C3;
-          transition: background .15s linear;
-        }
+        // &:hover {
+        //   background: #7869C3;
+        //   transition: background .15s linear;
+        // }
       }
       .net-type {
-        margin-right: 10px;
+        margin-right: 15px;
+        background: #C7E7FF;
+        color: #2587FF;
+        border-radius: 8px;
+        padding: 0 12px;
+      }
+      .account {
+        color: #333333;
+        padding: 4px;
+        border-radius:18px;
+        background: #E3ECF5;
+        >div {
+          display: inline-block;
+          vertical-align: top;
+          line-height: 28px;
+          box-shadow:0px 2px 4px 0px rgba(10,0,109,0.4);
+          background: #fff;
+          border-radius: 14px;
+          padding: 0 12px;
+        }
       }
     }
   }
