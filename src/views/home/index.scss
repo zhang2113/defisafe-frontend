@@ -54,6 +54,7 @@
       h3 {
         font-size: 68px;
         font-weight: bold;
+        font-style: italic;
       }
     }
     .menu {
@@ -61,18 +62,19 @@
       text-align: left;
       margin-top: 50px;
       button {
-        height: 40px;
-        line-height: 40px;
-        width: 120px;
-        text-align: center;
-        background: #fff;
-        color: #52d3aa;
+        height: 50px;
+        line-height: 44px;
+        padding: 0 50px;
+        border: 4px solid #fff;
+        color: #fff;
         font-size: 18px;
         text-transform: uppercase;
         border-radius: 30px;
-        transition: box-shadow 0.25s ease-in-out;
+        transition: all 0.25s ease-in-out;
+        font-weight: bold;
         &:hover {
-          box-shadow: 0px 14px 30px -15px rgba(0, 0, 0, 0.75);
+          color: #52d3aa;
+          background: #fff;
         }
       }
     }
@@ -144,24 +146,41 @@
     }
   }
   .footer {
-    border-top: 1px solid rgb(237, 238, 242);
-    padding: 30px 120px;
     color: #fff;
     background: #000;
-    .title {
-      font-size: 18px;
-      color: #90929C;
+    padding: 100px 0 60px;
+    .f-support, .f-menu {
+      text-align: center;
+      div, li {
+        display: inline-block;
+        vertical-align: top;
+      }
     }
-    .email {
-      font-size: 13px;
-      margin-top: 20px;
-      color: #606166;
-    }
-    .fm-list {
-      font-size: 13px;
-      color: #606166;
+    .f-menu {
+      margin-top: 60px;
+      margin-bottom: 70px;
       li {
-        line-height: 40px;
+        color: #606166;
+        font-size: 15px;
+        padding: 0 30px;
+        cursor: pointer;
+      }
+    }
+    .f-support {
+      div {
+        margin: 0 20px;
+        cursor: pointer;
+      }
+    }
+    .f-contact {
+      margin-top: 40px;
+      .title {
+        color: #606166;
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+      .email {
+        color: #fff;
       }
     }
   }

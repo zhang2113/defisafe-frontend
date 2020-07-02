@@ -45,8 +45,8 @@
                 <div class="number">{{totalMoneyFromRule}}</div>
               </div>
               <div class="cash-btn-group">
-                <el-button @click="getMoney">提取资产</el-button>
-                <el-button type="primary" @click="addMoney">我要投保</el-button>
+                <el-button @click="showClearModal">提取资产</el-button>
+                <el-button type="primary" @click="showInsureModal">我要投保</el-button>
               </div>
             </div>
           </div>
@@ -122,7 +122,7 @@
           <span>%</span>
         </div>
         <div>
-          <button @click="cofirmAdd">confirm</button>
+          <button @click="insureModalSave">confirm</button>
         </div>
       </div>
     </el-dialog>
@@ -138,7 +138,7 @@
           </el-select>
         </div>
         <div>
-          <button @click="cofirmGet">confirm</button>
+          <button @click="clearModalSave">confirm</button>
         </div>
       </div>
     </el-dialog>
@@ -161,7 +161,7 @@
         isLoad: false,
         loadText: "",
         web3: null,
-        mtypes: null,
+        mtypes: moneyType,
         mtype: 1, //通证
         account: "",
         money: 0,
@@ -181,7 +181,7 @@
       this.initApp();
     },
     mounted() {
-      this.mtypes = moneyType;
+      //get page data
       this.getData();
     },
     methods: {
@@ -194,10 +194,9 @@
           )
         }
       },
+      //init necessary data
       initApp() {
-        this.account = window.ethereum.selectedAddress;
         let netType = window.ethereum.networkVersion;
-        this.netType = netIds[netType];
         if (netType != 1 && netType != 3) {
           this.$router.push('/login');
           return;
@@ -208,26 +207,21 @@
           if (!accounts.length) {
             this.$router.push('/login');
           } else {
-            this.account = window.ethereum.selectedAddress;
             this.getData && this.getData();
           }
         })
       },
-      async cofirmAdd() {
-        let abi = '';
-        let addr = '';
-        for (let key in this.mtypes) {
-          if (this.mtypes[key] === this.mtype) {
-            abi = contract[key].abi;
-            addr = contract[key].addr;
-            console.log(key+ 'abi', abi);
-        console.log(key+ 'addr', addr);
-          }
-        }
+      showInsureModal() {
+        this.getUserToken();
+        this.showAdd = true;
+      },
+      async insureModalSave() {
+        let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
+        
 
         let ct = new this.web3.eth.Contract(
-          abi,
-          addr
+          contract[contractKey].abi,
+          contract[contractKey].addr
         );
         
         if (this.currentToken < parseFloat(this.insure)) {
@@ -332,18 +326,14 @@
           contract[contractKey]['addr']
         );
         ct.methods.balanceOf(this.account).call().then(res => {
-          console.log('bbb', res);
           this.currentToken = (res / 1e18).toFixed(4);
         });
       },
-      addMoney() {
-        this.getUserToken();
-        this.showAdd = true;
-      },
-      getMoney() {
+      
+      showClearModal() {
         this.showGet = true;
       },
-      cofirmGet() {
+      clearModalSave() {
         this.myContract.methods.withdrawAssets(this.account, this.mtype).send({ from: this.account })
           .on("transactionHash", hash => {
             this.showGet = false;
@@ -359,7 +349,10 @@
           })
           .on('error', console.error);
       },
+      //get page data
       async getData() {
+        this.netType = netIds[window.ethereum.networkVersion];
+        this.account = window.ethereum.selectedAddress;
         this.useInsureDesc = [];
         //Web3 Contract Object
         if (!this.myContract) {

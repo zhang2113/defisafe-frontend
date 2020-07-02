@@ -81,10 +81,41 @@
     </div>
 
     <div class="footer">
-      <el-row>
-        <el-col :span="10">
-          <div class="title">联系我们：</div>
+      <div class="tc f-logo">
+        <img src="../../imgs/common/logo-white.png" alt="">
+      </div>
+      <ul class="f-menu">
+        <li>关于DefiSafe</li>
+        <li>白皮书</li>
+        <li>FAQ</li>
+        <li>隐私政策</li>
+        <li>币圈快讯</li>
+      </ul>
+      <div class="f-support">
+        <div>
+          <img src="../../imgs/common/foot-icon1.png" alt="">
+        </div>
+        <div @click='goGithub'>
+          <img src="../../imgs/common/foot-icon2.png" alt="">
+        </div>
+        <div>
+          <img src="../../imgs/common/foot-icon3.png" alt="">
+        </div>
+        <div>
+          <img src="../../imgs/common/foot-icon4.png" alt="">
+        </div>
+        <div>
+          <img src="../../imgs/common/foot-icon5.png" alt="">
+        </div>
+      </div>
+
+      <div class="f-contact tc">
+          <div class="title">联系我们</div>
           <div class="email">邮箱：shuishangmusheng107@gmail.com</div>
+      </div>
+      <!-- <el-row>
+        <el-col :span="10">
+          
         </el-col>
         <el-col :span="14">
           <el-row>
@@ -104,7 +135,7 @@
             </el-col>
           </el-row>
         </el-col>
-      </el-row>
+      </el-row> -->
     </div>
   </div>
 </template>
