@@ -10,10 +10,9 @@ module.exports = {
       button: "Launch App"
     },
     features: {
-      title_1: "Simple",
-      title_2: "Safe",
-      title_3: "Flow",
-      desc_1: ''
-    }
+      title: "Simple | Safe | Flow",
+      desc: 'Function modules are clear and specific, step guidance is smooth and efficient, insurance is convenient and smooth | Operations involving user assets require authorization to verify multiple verification methods to ensure the security of account assets | Money transactions and circulation are functioning normally There is a strong variety of liquid trades'
+    },
+    
   },
 }

@@ -6,17 +6,14 @@
         <span class="text">DefiSafe</span>
       </div>
       <div class="fr language">
-        <el-dropdown>
+        <el-dropdown trigger='click' @command='changeLanguage'>
           <span class="el-dropdown-title">
-            下拉菜单
+            {{$i18n.locale == 'zh' ? "中文简体" : "Englist"}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>黄金糕</el-dropdown-item>
-            <el-dropdown-item>狮子头</el-dropdown-item>
-            <el-dropdown-item>螺蛳粉</el-dropdown-item>
-            <el-dropdown-item disabled>双皮奶</el-dropdown-item>
-            <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
+            <el-dropdown-item command="zh">中文简体</el-dropdown-item>
+            <el-dropdown-item command="en">English</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -46,22 +43,22 @@
       <div class="advantage clear">
         <div class="feature-center">
           <img src="../../imgs/simple-icon.png" alt="">
-          <h3>{{$t('home.features.title_1')}}</h3>
-          <p>This is a template for Cloud Sandbox Lab</p>
+          <h3>{{$tc('home.features.title', 1)}}</h3>
+          <p>{{$tc('home.features.desc', 1)}}</p>
         </div>
 
         <div class="feature-center">
           <img src="../../imgs/safe-icon.png" alt="">
 
-          <h3>{{$t('home.features.title_2')}}</h3>
-          <p>This is a template for Cloud Sandbox Lab</p>
+          <h3>{{$tc('home.features.title', 2)}}</h3>
+          <p>{{$tc('home.features.desc', 2)}}</p>
         </div>
 
         <div class="feature-center">
           <img src="../../imgs/flow-icon.png" alt="">
 
-          <h3>{{$t('home.features.title_3')}}</h3>
-          <p>This is a template for Cloud Sandbox Lab</p>
+          <h3>{{$tc('home.features.title', 3)}}</h3>
+          <p>{{$tc('home.features.desc', 3)}}</p>
         </div>
       </div>
 
@@ -69,10 +66,9 @@
       <div class="introduce bg">
         <div class="i_outer">
           <div class="i_item i_desc">
-            <div class="title">Defisafe是完全去中心化的协议，通过智能合约为人们提供便捷的资产风险对冲工具</div>
-            <div class="desc">Defisafe通过智能合约成立风险资金池，让使用者享有价格上涨带来的增值，分担价格下跌时资产缩水带来的风险。</div>
-            <div class="desc">Defisafe为数字资产投资者提供一个便捷开放的无门槛的金融市场，人们可以通过智能合约可信代码高效地进行交互，而不必依赖第三方担保实体。
-            </div>
+            <div class="title">{{$tc('home.advantage.title', 1)}}</div>
+            <div class="desc">{{$tc('home.advantage.desc_1', 1)}}</div>
+            <div class="desc">{{$t('home.advantage.desc_2')}}</div>
           </div>
           <div class="i_item i_item_img">
             <img width="100%" src="../../imgs/home-intor.png" alt="">
@@ -85,8 +81,8 @@
             <img width="100%" src="../../imgs/home-intro2.png" alt="">
           </div>
           <div class="i_item i_desc1">
-            <div class="title">Defisafe通过智能合约建立资产存托，放入到抵押借贷平台获取收益</div>
-            <div class="desc">智能合约会将部分资金（目前是总资产的5%），放入到例如Uniswap，AAVE，Compound等流动性借贷平台中赚取收益，这部分资金作为风险资金池，利用资金池的流动性来帮用户抵御资产下跌的风险。</div>
+            <div class="title">{{$tc('home.advantage.title', 2)}}</div>
+            <div class="desc">{{$tc('home.advantage.desc_1', 2)}}</div>
           </div>
         </div>
       </div>
@@ -96,58 +92,35 @@
       <div class="tc f-logo">
         <img src="../../imgs/common/logo-white.png" alt="">
       </div>
-      <ul class="f-menu">
+      <!-- <ul class="f-menu">
         <li>关于DefiSafe</li>
         <li>白皮书</li>
         <li>FAQ</li>
         <li>隐私政策</li>
         <li>币圈快讯</li>
-      </ul>
+      </ul> -->
       <div class="f-support">
-        <div>
+        <div @click='jumpUrl("https://github.com/defisafe")'>
           <img src="../../imgs/common/foot-icon1.png" alt="">
         </div>
-        <div @click='goGithub'>
+        <!-- <div @click='jumpUrl("https://discord.gg/PKVE6s9")'>
           <img src="../../imgs/common/foot-icon2.png" alt="">
-        </div>
-        <div>
+        </div> -->
+        <!-- <div @click='jumpUrl("https://discord.gg/PKVE6s9")'>
           <img src="../../imgs/common/foot-icon3.png" alt="">
-        </div>
-        <div>
+        </div> -->
+        <div @click='jumpUrl("https://mobile.twitter.com/defisafe")'>
           <img src="../../imgs/common/foot-icon4.png" alt="">
         </div>
-        <div>
+        <div @click='jumpUrl("https://discord.gg/PKVE6s9")'>
           <img src="../../imgs/common/foot-icon5.png" alt="">
         </div>
       </div>
 
       <div class="f-contact tc">
-        <div class="title">联系我们</div>
-        <div class="email">邮箱：shuishangmusheng107@gmail.com</div>
+        <div class="title">{{$t('home.foot.contact')}}</div>
+        <div class="email">{{$t('home.foot.email')}}：defisafe@163.com</div>
       </div>
-      <!-- <el-row>
-        <el-col :span="10">
-          
-        </el-col>
-        <el-col :span="14">
-          <el-row>
-            <el-col :span="12">
-              <ul class="fm-list">
-                <li>关于DefiSafe</li>
-                <li>白皮书</li>
-                <li>FAQ</li>
-                <li>github</li>
-              </ul>
-            </el-col>
-            <el-col :span="12">
-              <ul class="fm-list">
-                <li>隐私政策</li>
-                <li>币圈快讯</li>
-              </ul>
-            </el-col>
-          </el-row>
-        </el-col>
-      </el-row> -->
     </div>
   </div>
 </template>
@@ -156,6 +129,9 @@
   export default {
     name: "Home",
     methods: {
+      changeLanguage(val) {
+        this.$i18n.locale = val;
+      },
       login() {
         if (this.$util.isLogin()) {
           this.$router.push('/insure');

@@ -23,7 +23,7 @@
 
       <!-- nav -->
       <div class="nav">
-        <div class="title">抵押总金额(DAI)</div>
+        <div class="title">{{$t('insure.business.insureTitle')}}</div>
         <div class="amount">{{cashMoneyFromRule}}</div>
       </div>
       <!-- nav end -->
@@ -32,33 +32,33 @@
         <!-- left-account -->
         <div class="side-info fl">
           <div class="cash-insure">
-            <div class="title">我的资料</div>
+            <div class="title">{{$t('insure.business.useInsureTitle')}}</div>
             <div class="cash-list">
               <div class="cash-item clear">
                 <img class="icon" src="../../imgs/icon02.png" alt="">
-                <div class="label">我的投保金额</div>
-                <div class="number">{{moneyFromRule}}</div>
+                <div class="label">{{$tc('insure.business.useInsureDesc', 1)}}</div>
+                <div class="number">{{moneyFromRule}} DAI</div>
               </div>
               <div class="cash-item clear">
                 <img class="icon" src="../../imgs/icon01.png" alt="">
-                <div class="label">投保池金额</div>
-                <div class="number">{{totalMoneyFromRule}}</div>
+                <div class="label">{{$tc('insure.business.useInsureDesc', 2)}}</div>
+                <div class="number">{{totalMoneyFromRule}} DAI</div>
               </div>
               <div class="cash-btn-group">
-                <el-button @click="showClearModal">提取资产</el-button>
-                <el-button type="primary" @click="showInsureModal">我要投保</el-button>
+                <el-button @click="showClearModal">{{$t('insure.business.clearBtn')}}</el-button>
+                <el-button type="primary" @click="showInsureModal">{{$t('insure.business.insureBtn')}}</el-button>
               </div>
             </div>
           </div>
           <div class="account-type">
-            <div class="title">我的资产</div>
+            <div class="title">{{$t('insure.business.insureDescTitle')}}</div>
             <div class="account-list">
               <el-row class="a-item a-head">
                 <el-col :span="20">
-                  <div>我的投保资产</div>
+                  <div>{{$tc('insure.business.insureDescTb', 1)}}</div>
                 </el-col>
                 <el-col :span="4">
-                  <div class="amount">金额</div>
+                  <div class="amount">{{$tc('insure.business.insureDescTb', 2)}}</div>
                 </el-col>
               </el-row>
 
@@ -81,27 +81,26 @@
         <!-- right -->
         <div class="right-introduce fl">
           <div class="ri-item">
-            <div class="title">产品介绍</div>
-            <div class="desc">对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。 
-            </div>
+            <div class="title">{{$tc('insure.display.title', 1)}}</div>
+            <div class="desc">{{$tc('insure.display.desc_1', 1)}}</div>
           </div>
-          <div class="ri-item">
+          <!-- <div class="ri-item">
             <div class="title">产品使用方法及规则</div>
             <div class="desc">用户将加密资产投入defend.me协议平台，协议对资产的处理： 投保金（用户用来担保的资产，补偿金与其相关）转换成Dai，充当投保金。投保金存入借贷平台，提供流动性，收取利息。 被保险资产（原用户资产减去投保金）流入uniswap平台提供流动性。
             </div>
-          </div>
-          <div class="ri-item">
+          </div> -->
+          <!-- <div class="ri-item">
             <div class="title">投保资金池的介绍</div>
             <div class="desc">投保资金池会有两部分组成，投保金和盈余资金。投保金和盈余资金的最大区别是：盈余资金是用户投保后，进行结算后，剩余的投保金，被转换为盈余资金。用户投保，当前还未结算，此时的投保资金为投保金。</div>
-            <div>
-              <img width="100%" src="../../imgs/common/flow.png" alt="">
-            </div>
+          </div> -->
+          <div>
+            <img width="100%" src="../../imgs/common/flow.png" alt="">
           </div>
           <div class="ri-item">
-            <div class="title">几种场景的说明</div>
-            <div class="desc">1. 暴涨的场景：如果我有1000个knc，当前价值为1000Dai，拿出5%（50Dai）进行投保，暴涨的场景下，享受到的是950个knc资产的增值，50Dai为保险金。</div>
-            <div class="desc">2. 横盘的场景：如果我有1000个knc，当前价值为1000Dai，拿出5%（50Dai）进行投保，横盘场景下进行结算，此时取回的资产大约为：950个knc+50Dai，总价值大约为1000Dai。</div>
-            <div class="desc">3. 暴跌的场景：如果我有1000个knc，当前价值为1000Dai，拿出5%（50个knc = 50Dai）进行投保，价格暴跌50%，如果此时投保池资金为1000Dai，当前环境只有一个人正在投保，此时结算的资产为：950个knc + 525Dai，总价值大约为1000Dai（2025个knc）。</div>
+            <div class="title">{{$tc('insure.display.title', 2)}}</div>
+            <div class="desc">{{$tc('insure.display.desc_1', 2)}}</div>
+            <div class="desc">{{$t('insure.display.desc_2')}}</div>
+            <div class="desc">{{$t('insure.display.desc_3')}}</div>
           </div>
         </div>
         <!-- end -->
@@ -203,13 +202,15 @@
         }
       },
       //init necessary data
-      initApp() {
+      async initApp() {
+        let hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
+        let isLogin = await window.ethereum._metamask.isUnlocked();
+
         let netType = window.ethereum.networkVersion;
-        if (netType != 1 && netType != 3) {
+        if ((netType != 1 && netType != 3) || !hasInstallWallet || !isLogin) {
           this.$router.push('/login');
           return;
         }
-        this.web3 = this.initWeb3();
 
         window.ethereum.on('accountsChanged', accounts => {
           if (!accounts.length) {
@@ -362,6 +363,9 @@
         this.netType = netIds[window.ethereum.networkVersion];
         this.account = window.ethereum.selectedAddress;
         this.useInsureDesc = [];
+        if(!this.web3) {
+          this.web3 = this.initWeb3();
+        }
         //Web3 Contract Object
         if (!this.myContract) {
           this.myContract = new this.web3.eth.Contract(

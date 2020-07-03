@@ -5,10 +5,10 @@
       <span class="il_middle">DefiSafe</span>
     </div>
     <div class="box">
-      <div class="title tc">请链接钱包</div>
-      <div class="sub-title tc">目前平台只支持metamask钱包，请先安装后使用</div>
+      <div class="title tc">{{$t('login.title')}}</div>
+      <div class="sub-title tc">{{$t('login.desc')}}</div>
       <div class="b-foot">
-        <button class="tc" @click="login">{{hasInstallWallet ? 'Connect Wallet' : 'Install MetaMask'}}</button>
+        <button class="tc" @click="login">{{hasInstallWallet ? $t('login.connectBtn' : $t('login.installBtn'}}</button>
       </div>
     </div>
   </div>
