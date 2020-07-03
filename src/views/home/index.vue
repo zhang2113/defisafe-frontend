@@ -2,28 +2,41 @@
   <div class="home">
     <div class="head clear">
       <div class="fl logo">
-          <img src="../../imgs/logo.png" alt />
-          <span class="text">DefiSafe</span>
+        <img src="../../imgs/logo.png" alt />
+        <span class="text">DefiSafe</span>
+      </div>
+      <div class="fr language">
+        <el-dropdown>
+          <span class="el-dropdown-title">
+            下拉菜单
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>黄金糕</el-dropdown-item>
+            <el-dropdown-item>狮子头</el-dropdown-item>
+            <el-dropdown-item>螺蛳粉</el-dropdown-item>
+            <el-dropdown-item disabled>双皮奶</el-dropdown-item>
+            <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
       <div class="fr menu">
         <ul>
-          <li class="m-item">白皮书</li>
-          <li class="m-item">联系我们</li>
+          <li class="m-item">{{$t('home.head.list.doc')}}</li>
           <li class="m-item">
             <img @click='goGithub' class="git-icon" src="../../imgs/github.png" alt="">
           </li>
         </ul>
-
       </div>
     </div>
     <div class="nav">
       <div class="nav-outer">
         <div class="desc">
           <h3>Defisafe</h3>
-          <p>Protect your crypto assets</p>
+          <p>{{$t('home.nav.desc')}}</p>
         </div>
         <div class="menu">
-          <button @click="login">Start</button>
+          <button @click="login">{{$t('home.nav.button')}}</button>
         </div>
       </div>
     </div>
@@ -33,22 +46,21 @@
       <div class="advantage clear">
         <div class="feature-center">
           <img src="../../imgs/simple-icon.png" alt="">
-
-          <h3>simple</h3>
+          <h3>{{$t('home.features.title_1')}}</h3>
           <p>This is a template for Cloud Sandbox Lab</p>
         </div>
 
         <div class="feature-center">
           <img src="../../imgs/safe-icon.png" alt="">
 
-          <h3>safe</h3>
+          <h3>{{$t('home.features.title_2')}}</h3>
           <p>This is a template for Cloud Sandbox Lab</p>
         </div>
 
         <div class="feature-center">
           <img src="../../imgs/flow-icon.png" alt="">
 
-          <h3>flow</h3>
+          <h3>{{$t('home.features.title_3')}}</h3>
           <p>This is a template for Cloud Sandbox Lab</p>
         </div>
       </div>
@@ -110,8 +122,8 @@
       </div>
 
       <div class="f-contact tc">
-          <div class="title">联系我们</div>
-          <div class="email">邮箱：shuishangmusheng107@gmail.com</div>
+        <div class="title">联系我们</div>
+        <div class="email">邮箱：shuishangmusheng107@gmail.com</div>
       </div>
       <!-- <el-row>
         <el-col :span="10">

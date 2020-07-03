@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import {
-  Select, Input, Option, Dialog, Loading, MessageBox, Button, Table, TableColumn, Row, Col
+  Select, Input, Option, Dialog, Loading, MessageBox, Button, Table, TableColumn, Row, Col, Dropdown, DropdownMenu, DropdownItem
 } from 'element-ui';
 
 Vue.component(Select.name, Select);
@@ -8,6 +8,9 @@ Vue.component(Button.name, Button);
 Vue.component(Input.name, Input);
 Vue.component(Option.name, Option);
 Vue.component(Dialog.name, Dialog);
+Vue.use(Dropdown);
+Vue.use(DropdownMenu);
+Vue.use(DropdownItem);
 Vue.use(Row);
 Vue.use(Col);
 Vue.use(Table);

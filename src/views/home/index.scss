@@ -18,13 +18,20 @@
         margin-left: 10px;
       }
     }
+    /deep/.language {
+      margin-left: 50px;
+      .el-dropdown-title {
+        color: #fff;
+        cursor: pointer;
+      }
+    }
     .menu {
       .m-item {
         cursor: pointer;
         color: #fff;
         padding: 0 15px;
         display: inline-block;
-        vertical-align: middle;
+        vertical-align: top;
         .git-icon {
           width: 20px;
           vertical-align: middle;
