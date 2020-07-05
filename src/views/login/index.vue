@@ -8,7 +8,7 @@
       <div class="title tc">{{$t('login.title')}}</div>
       <div class="sub-title tc">{{$t('login.desc')}}</div>
       <div class="b-foot">
-        <button class="tc" @click="login">{{hasInstallWallet ? $t('login.connectBtn' : $t('login.installBtn'}}</button>
+        <button class="tc" @click="login">{{hasInstallWallet ? $t('login.connectBtn') : $t('login.installBtn')}}</button>
       </div>
     </div>
   </div>
@@ -44,11 +44,19 @@
           return;
         }
 
+        let netType = window.ethereum.networkVersion;
+
+        if (netType != 1 && netType != 3) {
+          this.$alert(this.$t('modal.login.desc'), this.$t('modal.login.title'), {
+            confirmButtonText: this.$t('modal.login.btn')
+          });
+          return;
+        }
+
         if (!window.ethereum.selectedAddress) {
           window.ethereum
             .enable()
             .then(accounts => {
-              console.log(accounts)
               this.$router.replace("/insure");
             })
             .catch(reason => {

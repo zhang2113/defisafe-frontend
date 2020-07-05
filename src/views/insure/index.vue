@@ -109,7 +109,7 @@
     </div>
 
     <!-- modal -->
-    <el-dialog title="投保" :visible.sync="showAdd" width="30%">
+    <el-dialog title="投保" :visible.sync="showInsure" width="30%">
       <div class="dai_modal">
         <div>
           <span>选择通证：</span>
@@ -135,7 +135,7 @@
     </el-dialog>
 
     <!-- get model -->
-    <el-dialog title="提取" :visible.sync="showGet" width="30%">
+    <el-dialog title="提取" :visible.sync="showClear" width="30%">
       <div class="dai_modal">
         <div>
           <span>选择通证：</span>
@@ -178,8 +178,8 @@
         myContract: null,
         leftChart: null,
         rightChart: null,
-        showAdd: false,
-        showGet: false,
+        showInsure: false,
+        showClear: false,
         insure: 0, //投保金额
         useInsureDesc: [],
       };
@@ -222,17 +222,17 @@
       },
       showInsureModal() {
         this.getUserToken();
-        this.showAdd = true;
+        this.showInsure = true;
       },
       async insureModalSave() {
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
-        
+
 
         let ct = new this.web3.eth.Contract(
           contract[contractKey].abi,
           contract[contractKey].addr
         );
-        
+
         if (this.currentToken < parseFloat(this.insure)) {
           this.$alert('余额不足', '提示', {
             confirmButtonText: '确定'
@@ -243,73 +243,82 @@
         let insureAmount = this.insure * 1e18 + '';
 
         if (this.mtype == 1) {
+          //eth
           try {
-            await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account, value: insureAmount });
-            this.isLoad = false;
+            let res = await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+            console.info('res', res);
+            this.showInsure = false;
             this.getData();
           } catch (error) {
-            this.isLoad = false;
+            this.showInsure = false;
+            console.error(error);
           }
         } else {
+          //other
+          let checkRes;
+          try {
+            checkRes = await ct.methods.allowance(this.account, contract[contractKey].addr).call({ from: this.account });
+          } catch (err) {
+            console.error(err);
+            return;
+          }
 
-          ct.methods.allowance(this.account, contract.addr).call({ from: this.account }).then(res => {
-            console.log('3333', res);
-            if (res != 0) {
-              ct.methods
-                .approve(contract.addr, 0)
-                .send({ from: this.account })
-                .on("transactionHash", hash => {
-                  this.showAdd = false;
-                  this.isLoad = true;
-                  this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
-                })
-                .on('receipt', async receipt => {
-                  ct.methods
-                    .approve(contract.addr, insureAmount)
-                    .send({ from: this.account })
-                    .on("transactionHash", hash => {
-                      this.showAdd = false;
-                      this.isLoad = true;
-                      this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
-                    })
-                    .on('receipt', async receipt => {
-                      setTimeout(async () => {
-                        try {
-                          await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account, value: insureAmount });
-                          this.isLoad = false;
-                          this.getData();
-                        } catch (error) {
-                          this.isLoad = false;
-                        }
-                      }, 300);
-                    })
-                    .on('error', console.error);
-                })
-                .on('error', console.error);
-            } else {
-              ct.methods
-                    .approve(contract.addr, insureAmount)
-                    .send({ from: this.account })
-                    .on("transactionHash", hash => {
-                      this.showAdd = false;
-                      this.isLoad = true;
-                      this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
-                    })
-                    .on('receipt', async receipt => {
-                      setTimeout(async () => {
-                        try {
-                          await this.myContract.methods.deposit(this.mtype, insureAmount, addr, this.insureRatio).send({ from: this.account, value: insureAmount });
-                          this.isLoad = false;
-                          this.getData();
-                        } catch (error) {
-                          this.isLoad = false;
-                        }
-                      }, 300);
-                    })
-                    .on('error', console.error);
-            }
-          });
+          if (checkRes != 0) {
+            //approve
+            ct.methods.approve(contract[contractKey].addr, 0).send({ from: this.account })
+              .on("transactionHash", hash => {
+                this.showInsure = false;
+              })
+              .on('receipt', async receipt => {
+                ct.methods
+                  .approve(contract[contractKey].addr, insureAmount)
+                  .send({ from: this.account })
+                  .on('receipt', async receipt => {
+                    try {
+                      console.table({
+                        tokenId: this.mtype,
+                        insureAmount: insureAmount,
+                        addr: contract[contractKey].addr,
+                        type: contractKey
+                      })
+                      await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+                      this.getData();
+                    } catch (error) {
+                      console.log(error);
+                    }
+                  })
+                  .on('error', error => {
+                    console.error(error);
+                  });
+              })
+              .on('error', error => {
+                this.showInsure = false;
+                console.log(error);
+              });
+          } else {
+            ct.methods
+              .approve(contract[contractKey].addr, insureAmount)
+              .send({ from: this.account })
+              .on("transactionHash", hash => {
+                this.showInsure = false;
+              })
+              .on('receipt', async receipt => {
 
+                try {
+                  console.table({
+                    tokenId: this.mtype,
+                    insureAmount: insureAmount,
+                    addr: contract[contractKey].addr,
+                    type: contractKey
+                  })
+                  await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+                  this.getData();
+                } catch (error) {
+                  console.log(error);
+                }
+              })
+              .on('error', console.error);
+          }
         }
       },
       findKeyByValue(obj, val) {
@@ -338,32 +347,32 @@
           this.currentToken = (res / 1e18).toFixed(4);
         });
       },
-      
+
       showClearModal() {
-        this.showGet = true;
+        this.showClear = true;
       },
       clearModalSave() {
         this.myContract.methods.withdrawAssets(this.account, this.mtype).send({ from: this.account })
           .on("transactionHash", hash => {
-            this.showGet = false;
-            this.isLoad = true;
-            this.loadText = "交易正在钱包中进行，可能需要一些时间，请耐心等待";
+            this.showClear = false;
           })
           .on('receipt', async receipt => {
-            this.isLoad = false;
-            this.$alert('提取成功', '提示', {
-              confirmButtonText: '确定'
-            });
+            // this.$alert('提取成功', '提示', {
+            //   confirmButtonText: '确定'
+            // });
             this.getData();
           })
-          .on('error', console.error);
+          .on('error', error => {
+            console.log(error);
+            this.showClear = false;
+          });
       },
       //get page data
       async getData() {
         this.netType = netIds[window.ethereum.networkVersion];
         this.account = window.ethereum.selectedAddress;
         this.useInsureDesc = [];
-        if(!this.web3) {
+        if (!this.web3) {
           this.web3 = this.initWeb3();
         }
         //Web3 Contract Object
@@ -400,7 +409,6 @@
         let typeArr = Object.keys(this.mtypes);
         if (index < typeArr.length) {
           this.myContract.methods.getTokenPoolUserBalanceOf(this.account, this.mtypes[typeArr[index]]).call().then(result => {
-            // console.log(typeArr[index], result);
             this.useInsureDesc.push({
               type: typeArr[index],
               amount: (result / 1e18).toFixed(4)
