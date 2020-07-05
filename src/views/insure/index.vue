@@ -1,5 +1,5 @@
 <template>
-  <div class="insure" v-loading="isLoad" :element-loading-text="loadText" element-loading-background="rgba(0, 0, 0, 0.8)">
+  <div class="insure">
     <img width="100%" class="bg-img" src="../../imgs/bg.png" alt="bg">
     <div class="container">
       <!-- head -->
@@ -14,7 +14,7 @@
           </div>
           <div class="account">
             <div>
-              {{account.slice(0, 6) + '...' + account.slice(-1, -4)}}
+              {{viewAccount}}
             </div>
           </div>
         </div>
@@ -22,9 +22,19 @@
       <!-- head end -->
 
       <!-- nav -->
-      <div class="nav">
-        <div class="title">{{$t('insure.business.insureTitle')}}</div>
-        <div class="amount">{{cashMoneyFromRule}}</div>
+      <div class="nav clear">
+        <div class="fl">
+            <div class="title">{{$t('insure.business.insureTitle')}}</div>
+            <div class="amount">{{cashMoneyFromRule}}</div>
+        </div>
+        <div class="fl">
+            <div class="title">投保总流水</div>
+            <div class="amount">{{totalInsureMoney}}</div>
+        </div>
+        <div class="fl">
+            <div class="title">总投保次数</div>
+            <div class="amount">{{totalInsureAmount}}</div>
+        </div>
       </div>
       <!-- nav end -->
 
@@ -93,9 +103,9 @@
             <div class="title">投保资金池的介绍</div>
             <div class="desc">投保资金池会有两部分组成，投保金和盈余资金。投保金和盈余资金的最大区别是：盈余资金是用户投保后，进行结算后，剩余的投保金，被转换为盈余资金。用户投保，当前还未结算，此时的投保资金为投保金。</div>
           </div> -->
-          <div>
+          <!-- <div>
             <img width="100%" src="../../imgs/common/flow.png" alt="">
-          </div>
+          </div> -->
           <div class="ri-item">
             <div class="title">{{$tc('insure.display.title', 2)}}</div>
             <div class="desc">{{$tc('insure.display.desc_1', 2)}}</div>
@@ -166,7 +176,6 @@
         insureRatio: 5,
         currentToken: 0,
         isLoad: false,
-        loadText: "",
         web3: null,
         mtypes: moneyType,
         mtype: 1, //通证
@@ -182,7 +191,15 @@
         showClear: false,
         insure: 0, //投保金额
         useInsureDesc: [],
+        totalInsureAmount: 0,
+        totalInsureMoney: 0
       };
+    },
+    computed: {
+      viewAccount() {
+        let account = this.account.slice(0, 6) + "..." + this.account.slice(-4, -1);
+        return account;
+      }
     },
     created() {
       this.initApp();
@@ -265,13 +282,13 @@
 
           if (checkRes != 0) {
             //approve
-            ct.methods.approve(contract[contractKey].addr, 0).send({ from: this.account })
+            ct.methods.approve(contract.addr, 0).send({ from: this.account })
               .on("transactionHash", hash => {
                 this.showInsure = false;
               })
               .on('receipt', async receipt => {
                 ct.methods
-                  .approve(contract[contractKey].addr, insureAmount)
+                  .approve(contract.addr, insureAmount)
                   .send({ from: this.account })
                   .on('receipt', async receipt => {
                     try {
@@ -281,7 +298,7 @@
                         addr: contract[contractKey].addr,
                         type: contractKey
                       })
-                      await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+                      await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
                       this.getData();
                     } catch (error) {
                       console.log(error);
@@ -297,7 +314,7 @@
               });
           } else {
             ct.methods
-              .approve(contract[contractKey].addr, insureAmount)
+              .approve(contract.addr, insureAmount)
               .send({ from: this.account })
               .on("transactionHash", hash => {
                 this.showInsure = false;
@@ -311,7 +328,7 @@
                     addr: contract[contractKey].addr,
                     type: contractKey
                   })
-                  await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount });
+                  await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
                   this.getData();
                 } catch (error) {
                   console.log(error);
@@ -372,6 +389,7 @@
         this.netType = netIds[window.ethereum.networkVersion];
         this.account = window.ethereum.selectedAddress;
         this.useInsureDesc = [];
+        this.useInsureDesc = Object.keys(this.mtypes).map(e => { return { type: e, amount: 0 } });
         if (!this.web3) {
           this.web3 = this.initWeb3();
         }
@@ -383,6 +401,10 @@
           );
 
         }
+
+        this.web3.eth.subscribe("pendingTransactions").on("data", function (transaction) {
+          console.log('11111', transaction);
+        });
 
         //Insure Amount
         this.moneyFromRule = await this.myContract.methods
@@ -402,17 +424,26 @@
           .call();
         this.cashMoneyFromRule = (this.cashMoneyFromRule / 1e18).toFixed(4);
 
+        this.totalInsureAmount = await this.myContract.methods
+          .getInsuranceCountForPlatform_ever()
+          .call();
+        this.totalInsureAmount = (this.totalInsureAmount / 1e18).toFixed(4);
+
+        this.totalInsureMoney = await this.myContract.methods
+          .getAssetsTotalForPlatform_ever()
+          .call();
+        this.totalInsureMoney = (this.totalInsureMoney / 1e18).toFixed(4);
+
         //Get details of my assets
         this.getMyInsureDetail();
       },
       getMyInsureDetail(index = 0) {
+
         let typeArr = Object.keys(this.mtypes);
+
         if (index < typeArr.length) {
           this.myContract.methods.getTokenPoolUserBalanceOf(this.account, this.mtypes[typeArr[index]]).call().then(result => {
-            this.useInsureDesc.push({
-              type: typeArr[index],
-              amount: (result / 1e18).toFixed(4)
-            });
+            this.useInsureDesc[0].amount = result == 0 ? 0 : (result / 1e18).toFixed(4);
             this.getMyInsureDetail(index + 1);
           }).catch(err => {
             console.error(err);

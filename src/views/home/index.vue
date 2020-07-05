@@ -43,22 +43,22 @@
       <div class="advantage clear">
         <div class="feature-center">
           <img src="../../imgs/simple-icon.png" alt="">
-          <h3>{{$tc('home.features.title', 1)}}</h3>
-          <p>{{$tc('home.features.desc', 1)}}</p>
+          <h3>{{$tc('home.features.title', 0)}}</h3>
+          <p>{{$tc('home.features.desc', 0)}}</p>
         </div>
 
         <div class="feature-center">
           <img src="../../imgs/safe-icon.png" alt="">
 
-          <h3>{{$tc('home.features.title', 2)}}</h3>
-          <p>{{$tc('home.features.desc', 2)}}</p>
+          <h3>{{$tc('home.features.title', 1)}}</h3>
+          <p>{{$tc('home.features.desc', 1)}}</p>
         </div>
 
         <div class="feature-center">
           <img src="../../imgs/flow-icon.png" alt="">
 
-          <h3>{{$tc('home.features.title', 3)}}</h3>
-          <p>{{$tc('home.features.desc', 3)}}</p>
+          <h3>{{$tc('home.features.title', 2)}}</h3>
+          <p>{{$tc('home.features.desc', 2)}}</p>
         </div>
       </div>
 
@@ -66,8 +66,8 @@
       <div class="introduce bg">
         <div class="i_outer">
           <div class="i_item i_desc">
-            <div class="title">{{$tc('home.advantage.title', 1)}}</div>
-            <div class="desc">{{$tc('home.advantage.desc_1', 1)}}</div>
+            <div class="title">{{$tc('home.advantage.title', 0)}}</div>
+            <div class="desc">{{$tc('home.advantage.desc_1', 0)}}</div>
             <div class="desc">{{$t('home.advantage.desc_2')}}</div>
           </div>
           <div class="i_item i_item_img">
@@ -81,8 +81,8 @@
             <img width="100%" src="../../imgs/home-intro2.png" alt="">
           </div>
           <div class="i_item i_desc1">
-            <div class="title">{{$tc('home.advantage.title', 2)}}</div>
-            <div class="desc">{{$tc('home.advantage.desc_1', 2)}}</div>
+            <div class="title">{{$tc('home.advantage.title', 1)}}</div>
+            <div class="desc">{{$tc('home.advantage.desc_1', 1)}}</div>
           </div>
         </div>
       </div>
@@ -115,6 +115,9 @@
         <div @click='jumpUrl("https://discord.gg/PKVE6s9")'>
           <img src="../../imgs/common/foot-icon5.png" alt="">
         </div>
+        <div @click='jumpUrl("https://www.facebook.com/profile.php?id=100053264643426")'>
+          <img src="../../imgs/common/foot-icon6.png" alt="">
+        </div>
       </div>
 
       <div class="f-contact tc">
@@ -131,6 +134,9 @@
     methods: {
       changeLanguage(val) {
         this.$i18n.locale = val;
+      },
+      jumpUrl(url) {
+        window.location.href = url;
       },
       login() {
         if (this.$util.isLogin()) {

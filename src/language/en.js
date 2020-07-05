@@ -10,8 +10,8 @@ module.exports = {
       button: "Launch App"
     },
     features: {
-      title: "Simple | Safe | Flow",
-      desc: 'Function modules are clear and specific, step guidance is smooth and efficient, insurance is convenient and smooth | Operations involving user assets require authorization to verify multiple verification methods to ensure the security of account assets | Money transactions and circulation are functioning normally There is a strong variety of liquid trades'
+      title: "Simple | Safe | Close Quick",
+      desc: 'Function modules are clear and specific, step guidance is smooth and efficient, insurance is convenient and smooth | All operations involving user assets require authorization verification to ensure the security of account assets | Wallet directly participates in the agreement without going through the tripartite platform'
     },
     advantage: {
       title: 'Defisafe is a fully decentralized protocol that provides people with a convenient asset risk hedging tool through smart contracts | Defisafe creates an asset depository through smart contracts and puts it on a mortgage lending platform to make money',
