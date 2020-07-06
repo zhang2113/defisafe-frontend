@@ -31,7 +31,7 @@ module.exports = {
   },
   insure: {
     business: {
-      insureTitle: '抵押总金额(DAI)',
+      insureTitle: '抵押总金额(DAI) | 投保总流水(DAI) | 总投保次数',
       useInsureTitle: "我的资料",
       useInsureDesc: '我的投保金额 | 投保池金额',
       insureBtn: '我要投保',
@@ -44,13 +44,36 @@ module.exports = {
       desc_1: '对于持有加密资产的用户，想享受价格上涨带来的资产增值，又能够减轻加密资产价格下跌带来的风险，DEFISAFE就是在解决这个问题。让用户享有加密资产价格上涨带来的增值同时，又能够使他们减轻资产价格下跌时资产缩水带来的风险。 | 1. 暴涨的场景：如果我有1000个knc，当前价值为1000Dai，拿出5%（50Dai）进行投保，暴涨的场景下，享受到的是950个knc资产的增值，50Dai为保险金。',
       desc_2: '2. 横盘的场景：如果我有1000个knc，当前价值为1000Dai，拿出5%（50Dai）进行投保，横盘场景下进行结算，此时取回的资产大约为：950个knc+50Dai，总价值大约为1000Dai。',
       desc_3: '3. 暴跌的场景：如果我有1000个knc，当前价值为1000Dai，拿出5%（50个knc = 50Dai）进行投保，价格暴跌50%，如果此时投保池资金为1000Dai，当前环境只有一个人正在投保，此时结算的资产为：950个knc + 525Dai，总价值大约为1000Dai（2025个knc）。'
-    }
+    },
+    load: {
+      text: '交易正在钱包中进行，请耐心等待...'
+    },
+    net: '测试网'
   },
   modal: {
     login: {
       title: '提示',
       btn: "确定",
       desc: '请确认安装metamask钱包并使用Ropsten网络或者主网'
+    },
+    insure: {
+      start: {
+        title: '投保',
+        token: '选择通证',
+        amount: '投保金额',
+        ratio: '投保比例',
+        btn: '确定'
+      },
+      end: {
+        title: '提取',
+        token: '选择通证',
+        btn: '确定'
+      },
+      tip: {
+        title: '提示 | 提示',
+        desc: '余额不足 | 提取成功',
+        btn: '确定'
+      }
     }
   }
 }

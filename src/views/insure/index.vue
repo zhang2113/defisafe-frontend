@@ -1,5 +1,5 @@
 <template>
-  <div class="insure">
+  <div v-loading="isLoad" :element-loading-text="$t('insure.load.text')" class="insure">
     <img width="100%" class="bg-img" src="../../imgs/bg.png" alt="bg">
     <div class="container">
       <!-- head -->
@@ -9,8 +9,8 @@
           <span class="text">DefiSafe</span>
         </div>
         <div class="fr head-right">
-          <div class="net-type">
-            {{netType}}
+          <div class="net-type" v-if='netType == "Ropsten"'>
+            {{netType + ' ' + $t('insure.net')}}
           </div>
           <div class="account">
             <div>
@@ -24,16 +24,16 @@
       <!-- nav -->
       <div class="nav clear">
         <div class="fl">
-            <div class="title">{{$t('insure.business.insureTitle')}}</div>
-            <div class="amount">{{cashMoneyFromRule}}</div>
+          <div class="title">{{$tc('insure.business.insureTitle', 0)}}</div>
+          <div class="amount">{{cashMoneyFromRule}}</div>
         </div>
         <div class="fl">
-            <div class="title">投保总流水</div>
-            <div class="amount">{{totalInsureMoney}}</div>
+          <div class="title">{{$tc('insure.business.insureTitle', 1)}}</div>
+          <div class="amount">{{totalInsureMoney}}</div>
         </div>
         <div class="fl">
-            <div class="title">总投保次数</div>
-            <div class="amount">{{totalInsureAmount}}</div>
+          <div class="title">{{$tc('insure.business.insureTitle', 2)}}</div>
+          <div class="amount">{{totalInsureAmount}}</div>
         </div>
       </div>
       <!-- nav end -->
@@ -119,43 +119,43 @@
     </div>
 
     <!-- modal -->
-    <el-dialog title="投保" :visible.sync="showInsure" width="30%">
+    <el-dialog :title="$t('modal.insure.start.title')" :visible.sync="showInsure" width="30%">
       <div class="dai_modal">
         <div>
-          <span>选择通证：</span>
-          <el-select @change='changeToken' style="width: 220px" v-model="mtype" placeholder="请选择">
+          <span>{{$t('modal.insure.start.token')}}：</span>
+          <el-select @change='changeToken' style="width: 220px" v-model="mtype" placeholder="">
             <el-option v-for="(value, name) in mtypes" :key="name" :label="name" :value="value">
             </el-option>
           </el-select>
         </div>
         <div>{{currentToken}}</div>
         <div>
-          <span>投保金额：</span>
-          <el-input style="width: 220px" v-model="insure" placeholder="请输入投保金额"></el-input>
+          <span>{{$t('modal.insure.start.amount')}}：</span>
+          <el-input style="width: 220px" v-model="insure" placeholder=""></el-input>
         </div>
         <div>
-          <span>投保比例：</span>
-          <el-input style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio" placeholder="请输入投保比例"></el-input>
+          <span>{{$t('modal.insure.start.ratio')}}：</span>
+          <el-input style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio" placeholder=""></el-input>
           <span>%</span>
         </div>
         <div>
-          <button @click="insureModalSave">confirm</button>
+          <button @click="insureModalSave">{{$t('modal.insure.start.btn')}}</button>
         </div>
       </div>
     </el-dialog>
 
     <!-- get model -->
-    <el-dialog title="提取" :visible.sync="showClear" width="30%">
+    <el-dialog :title="$t('modal.insure.end.title')" :visible.sync="showClear" width="30%">
       <div class="dai_modal">
         <div>
-          <span>选择通证：</span>
-          <el-select style="width: 220px" v-model="mtype" placeholder="请选择">
+          <span>{{$t('modal.insure.end.token')}}：</span>
+          <el-select style="width: 220px" v-model="mtype" placeholder="">
             <el-option v-for="(value, name) in mtypes" :key="name" :label="name" :value="value">
             </el-option>
           </el-select>
         </div>
         <div>
-          <button @click="clearModalSave">confirm</button>
+          <button @click="clearModalSave">{{$t('modal.insure.end.btn')}}</button>
         </div>
       </div>
     </el-dialog>
@@ -251,8 +251,8 @@
         );
 
         if (this.currentToken < parseFloat(this.insure)) {
-          this.$alert('余额不足', '提示', {
-            confirmButtonText: '确定'
+          this.$alert(this.$tc('modal.insure.tip.desc', 0), this.$tc('modal.insure.tip.title', 0), {
+            confirmButtonText: this.$t('modal.insure.tip.btn')
           });
           return;
         }
@@ -261,30 +261,37 @@
 
         if (this.mtype == 1) {
           //eth
-          try {
-            let res = await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount });
-            console.info('res', res);
-            this.showInsure = false;
-            this.getData();
-          } catch (error) {
-            this.showInsure = false;
-            console.error(error);
-          }
+
+          this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
+            .on("transactionHash", hash => {
+              this.isLoad = true;
+              this.showInsure = false;
+            })
+            .on('receipt', async receipt => {
+              this.isLoad = false;
+              this.getData();
+            })
+            .on('error', error => {
+              this.isLoad = false;
+              console.error(error);
+            });
         } else {
           //other
           let checkRes;
+
           try {
-            checkRes = await ct.methods.allowance(this.account, contract[contractKey].addr).call({ from: this.account });
+            checkRes = await ct.methods.allowance(this.account, contract.addr).call({ from: this.account });
           } catch (err) {
             console.error(err);
             return;
           }
-
+        
           if (checkRes != 0) {
             //approve
             ct.methods.approve(contract.addr, 0).send({ from: this.account })
               .on("transactionHash", hash => {
                 this.showInsure = false;
+                this.isLoad = true;
               })
               .on('receipt', async receipt => {
                 ct.methods
@@ -299,17 +306,21 @@
                         type: contractKey
                       })
                       await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
+                      this.isLoad = false;
                       this.getData();
                     } catch (error) {
                       console.log(error);
+                      this.isLoad = false;
                     }
                   })
                   .on('error', error => {
+                    this.isLoad = false;
                     console.error(error);
                   });
               })
               .on('error', error => {
                 this.showInsure = false;
+                this.isLoad = false;
                 console.log(error);
               });
           } else {
@@ -318,6 +329,7 @@
               .send({ from: this.account })
               .on("transactionHash", hash => {
                 this.showInsure = false;
+                this.isLoad = true;
               })
               .on('receipt', async receipt => {
 
@@ -329,12 +341,16 @@
                     type: contractKey
                   })
                   await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
+                  this.isLoad = false;
                   this.getData();
                 } catch (error) {
+                  this.isLoad = false;
                   console.log(error);
                 }
               })
-              .on('error', console.error);
+              .on('error', error => {
+                this.isLoad = false;
+              });
           }
         }
       },
@@ -372,16 +388,19 @@
         this.myContract.methods.withdrawAssets(this.account, this.mtype).send({ from: this.account })
           .on("transactionHash", hash => {
             this.showClear = false;
+            this.isLoad = true;
           })
           .on('receipt', async receipt => {
-            // this.$alert('提取成功', '提示', {
-            //   confirmButtonText: '确定'
-            // });
+            this.isLoad = false;
+            this.$alert(this.$tc('modal.insure.tip.desc', 1), this.$tc('modal.insure.tip.title', 1), {
+              confirmButtonText: this.$t('modal.insure.tip.btn')
+            });
             this.getData();
           })
           .on('error', error => {
             console.log(error);
             this.showClear = false;
+            this.isLoad = false;
           });
       },
       //get page data
@@ -399,12 +418,7 @@
             contract.abi,
             contract.addr
           );
-
         }
-
-        this.web3.eth.subscribe("pendingTransactions").on("data", function (transaction) {
-          console.log('11111', transaction);
-        });
 
         //Insure Amount
         this.moneyFromRule = await this.myContract.methods
@@ -427,7 +441,6 @@
         this.totalInsureAmount = await this.myContract.methods
           .getInsuranceCountForPlatform_ever()
           .call();
-        this.totalInsureAmount = (this.totalInsureAmount / 1e18).toFixed(4);
 
         this.totalInsureMoney = await this.myContract.methods
           .getAssetsTotalForPlatform_ever()
@@ -443,7 +456,7 @@
 
         if (index < typeArr.length) {
           this.myContract.methods.getTokenPoolUserBalanceOf(this.account, this.mtypes[typeArr[index]]).call().then(result => {
-            this.useInsureDesc[0].amount = result == 0 ? 0 : (result / 1e18).toFixed(4);
+            this.useInsureDesc[index].amount = result == 0 ? 0 : (result / 1e18).toFixed(4);
             this.getMyInsureDetail(index + 1);
           }).catch(err => {
             console.error(err);

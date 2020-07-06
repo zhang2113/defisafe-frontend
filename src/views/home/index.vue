@@ -19,7 +19,9 @@
       </div>
       <div class="fr menu">
         <ul>
-          <li class="m-item">{{$t('home.head.list.doc')}}</li>
+          <li class="m-item">
+            <a href="/DEFISAFE1.pdf" target="_blank">{{$t('home.head.list.doc')}}</a>
+          </li>
           <li class="m-item">
             <img @click='goGithub' class="git-icon" src="../../imgs/github.png" alt="">
           </li>

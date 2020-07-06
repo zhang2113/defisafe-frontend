@@ -31,7 +31,7 @@ module.exports = {
   },
   insure: {
     business: {
-      insureTitle: 'Total mortgage amount (DAI)',
+      insureTitle: 'Total mortgage amount (DAI) | Total insurance account(DAI) | Total number of applications',
       useInsureTitle: "my profile",
       useInsureDesc: 'The amount of my insurance | Pool amount',
       insureBtn: 'Insure',
@@ -44,13 +44,36 @@ module.exports = {
       desc_1: 'DEFISAFE solves the problem that users who hold encrypted assets want to enjoy the added value of their assets due to rising prices while mitigating the risk of falling prices of encrypted assets.This allows users to enjoy the added value of cryptographic asset prices while at the same time reducing the risk of asset losses when asset prices fall | 1. Boom scenario: If I have 1000 KNC and the current value is 1000Dai, I will take out 5% (50Dai) to insure. In boom scenario, I will enjoy the appreciation of 950 KNC assets and 50Dai is the insurance.',
       desc_2: '2. If I have 1000 KNC with current value of 1000 DAI, I will take out 5% (50Dai) for insurance and settle accounts under the horizontal trading scenario, the assets I get back will be about 950 KNC +50Dai with total value of 1000 DAI.',
       desc_3: '3. Scenario: If I have 1,000 KNC with a current value of 1,000 DAI, take out 5% (50 KNC = 50Dai) to insure and the price drops by 50%. If the pool is 1,000 DAI and only one person is insured in the current environment, the assets settled are 950 KNC + 525Dai with a total value of 1,000 DAI (2,025 KNC).'
-    }
+    },
+    load: {
+      text: 'The transaction is in the wallet, please wait patiently...'
+    },
+    net: 'test network'
   },
   modal: {
     login: {
       title: 'Tip',
       btn: "confirm",
       desc: 'Please be sure to install the Metamask wallet and use the Ropsten network or the main network'
+    },
+    insure: {
+      start: {
+        title: 'insure',
+        token: 'choose token',
+        amount: 'amount',
+        ratio: 'insure ratio',
+        btn: 'confirm'
+      },
+      end: {
+        title: 'close',
+        token: 'choose token',
+        btn: 'confirm'
+      },
+      tip: {
+        title: 'Tip | Tip',
+        desc: 'not sufficient funds | close success',
+        btn: 'confirm'
+      }
     }
   }
 }
