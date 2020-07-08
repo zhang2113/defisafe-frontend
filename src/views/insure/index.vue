@@ -253,7 +253,7 @@
         );
 
         if (this.currentToken < parseFloat(this.insure)) {
-          this.$alert(this.$tc('modal.insure.tip.desc', 0), this.$tc('modal.insure.tip.title', 0), {
+          this.$alert(this.$tc('modal.insure.tip.desc', 1), this.$tc('modal.insure.tip.title', 1), {
             confirmButtonText: this.$t('modal.insure.tip.btn')
           });
           return;
@@ -408,7 +408,7 @@
           .on('receipt', async receipt => {
             sessionStorage.removeItem('txHash');
             this.isLoad = false;
-            this.$alert(this.$tc('modal.insure.tip.desc', 1), this.$tc('modal.insure.tip.title', 1), {
+            this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
               confirmButtonText: this.$t('modal.insure.tip.btn')
             });
             this.getData();

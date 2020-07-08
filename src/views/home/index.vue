@@ -68,8 +68,8 @@
       <div class="introduce bg">
         <div class="i_outer">
           <div class="i_item i_desc">
-            <div class="title">{{$tc('home.advantage.title', 0)}}</div>
-            <div class="desc">{{$tc('home.advantage.desc_1', 0)}}</div>
+            <div class="title">{{$tc('home.advantage.title', 1)}}</div>
+            <div class="desc">{{$tc('home.advantage.desc_1', 1)}}</div>
             <div class="desc">{{$t('home.advantage.desc_2')}}</div>
           </div>
           <div class="i_item i_item_img">
@@ -83,8 +83,8 @@
             <img width="100%" src="../../imgs/home-intro2.png" alt="">
           </div>
           <div class="i_item i_desc1">
-            <div class="title">{{$tc('home.advantage.title', 1)}}</div>
-            <div class="desc">{{$tc('home.advantage.desc_1', 1)}}</div>
+            <div class="title">{{$tc('home.advantage.title', 2)}}</div>
+            <div class="desc">{{$tc('home.advantage.desc_1', 2)}}</div>
           </div>
         </div>
       </div>
