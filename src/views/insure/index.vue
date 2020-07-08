@@ -1,11 +1,10 @@
 <template>
-  <div v-loading="isLoad" :element-loading-text="$t('insure.load.text')" element-loading-background="rgba(0, 0, 0, 0.8)"
-    class="insure">
+  <div v-loading="isLoad" :element-loading-text="$t('insure.load.text')" element-loading-background="rgba(0, 0, 0, 0.8)" class="insure">
     <img width="100%" class="bg-img" src="../../imgs/bg.png" alt="bg">
     <div class="container">
       <!-- head -->
       <div class="head clear">
-        <div class="fl">
+        <div @click='$router.push("/")' class="fl head-left">
           <img class="logo" src="../../imgs/logo.png" alt="">
           <span class="text">DefiSafe</span>
         </div>
@@ -47,13 +46,18 @@
             <div class="cash-list">
               <div class="cash-item clear">
                 <img class="icon" src="../../imgs/icon02.png" alt="">
-                <div class="label">{{$tc('insure.business.useInsureDesc', 1)}}</div>
+                <div class="label">{{$tc('insure.business.useInsureDesc', 0)}}</div>
                 <div class="number">{{moneyFromRule}} DAI</div>
               </div>
               <div class="cash-item clear">
                 <img class="icon" src="../../imgs/icon01.png" alt="">
-                <div class="label">{{$tc('insure.business.useInsureDesc', 2)}}</div>
+                <div class="label">{{$tc('insure.business.useInsureDesc', 1)}}</div>
                 <div class="number">{{totalMoneyFromRule}} DAI</div>
+              </div>
+              <div class="cash-item clear">
+                <img class="icon" src="../../imgs/logo.png" alt="">
+                <div class="label">{{$tc('insure.business.useInsureDesc', 2)}}</div>
+                <div class="number">{{userDSE}}</div>
               </div>
               <div class="cash-btn-group">
                 <el-button @click="showClearModal">{{$t('insure.business.clearBtn')}}</el-button>
@@ -65,21 +69,21 @@
             <div class="title">{{$t('insure.business.insureDescTitle')}}</div>
             <div class="account-list">
               <el-row class="a-item a-head">
-                <el-col :span="16">
+                <el-col :span="14">
                   <div>{{$tc('insure.business.insureDescTb', 1)}}</div>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="10">
                   <div class="amount">{{$tc('insure.business.insureDescTb', 2)}}</div>
                 </el-col>
               </el-row>
 
               <el-row v-for='item in useInsureDesc' :key='item.type' class="a-item">
-                <el-col class="left-name" :span="20">
+                <el-col class="left-name" :span="14">
                   <img :src="tokenIcon[item.type]" alt="">
                   <span>{{item.type}}</span>
                   <!-- <span class="w">(BTC)</span> -->
                 </el-col>
-                <el-col :span="4">
+                <el-col :span="10">
                   <div class="amount">{{item.amount}}</div>
                 </el-col>
               </el-row>
@@ -136,7 +140,7 @@
         </div>
         <div>
           <span>{{$t('modal.insure.start.ratio')}}：</span>
-          <el-input style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio" placeholder="">
+          <el-input max='90' class="ratio-input" min='5' style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio" placeholder="">
           </el-input>
           <span>%</span>
         </div>
@@ -194,7 +198,8 @@
         insure: 0, //投保金额
         useInsureDesc: [],
         totalInsureAmount: 0,
-        totalInsureMoney: 0
+        totalInsureMoney: 0,
+        userDSE: 0
       };
     },
     computed: {
@@ -253,7 +258,7 @@
         );
 
         if (this.currentToken < parseFloat(this.insure)) {
-          this.$alert(this.$tc('modal.insure.tip.desc', 1), this.$tc('modal.insure.tip.title', 1), {
+          this.$alert(this.$tc('modal.insure.tip.desc', 0), this.$tc('modal.insure.tip.title', 0), {
             confirmButtonText: this.$t('modal.insure.tip.btn')
           });
           return;
@@ -273,6 +278,9 @@
             .on('receipt', async receipt => {
               this.isLoad = false;
               sessionStorage.removeItem('txHash');
+              this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                confirmButtonText: 'ok'
+              });
               this.getData();
             })
             .on('error', error => {
@@ -313,6 +321,9 @@
                       })
                       await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
                       this.isLoad = false;
+                      this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                        confirmButtonText: 'ok'
+                      });
                       sessionStorage.removeItem('txHash');
                       this.getData();
                     } catch (error) {
@@ -353,6 +364,9 @@
                   })
                   await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
                   this.isLoad = false;
+                  this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                    confirmButtonText: 'ok'
+                  });
                   sessionStorage.removeItem('txHash');
                   this.getData();
                 } catch (error) {
@@ -390,6 +404,7 @@
           contract[contractKey]['abi'],
           contract[contractKey]['addr']
         );
+
         ct.methods.balanceOf(this.account).call().then(res => {
           this.currentToken = (res / 1e18).toFixed(4);
         });
@@ -408,7 +423,7 @@
           .on('receipt', async receipt => {
             sessionStorage.removeItem('txHash');
             this.isLoad = false;
-            this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+            this.$alert(this.$tc('modal.insure.tip.desc', 1), this.$tc('modal.insure.tip.title', 1), {
               confirmButtonText: this.$t('modal.insure.tip.btn')
             });
             this.getData();
@@ -442,6 +457,18 @@
             contract.addr
           );
         }
+
+        //des
+
+        let desContract = new this.web3.eth.Contract(
+          contract.dse.abi,
+          contract.dse.addr
+        );
+
+        desContract.methods.balanceOf(this.account).call().then(res => {
+          console.log(res && (res / 1000).toFixed(4))
+          this.userDSE = res && (res / 1e18).toFixed(4);
+        });
 
         //Insure Amount
         this.moneyFromRule = await this.myContract.methods

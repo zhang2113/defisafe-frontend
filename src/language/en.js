@@ -33,7 +33,7 @@ module.exports = {
     business: {
       insureTitle: 'Total mortgage amount (DAI) | Total insurance account(DAI) | Total number of applications',
       useInsureTitle: "my profile",
-      useInsureDesc: 'The amount of my insurance | Pool amount',
+      useInsureDesc: 'The amount of my insurance | Pool amount | DSE',
       insureBtn: 'Insure',
       clearBtn: 'Clearing',
       insureDescTitle: 'My assets',
@@ -70,8 +70,8 @@ module.exports = {
         btn: 'confirm'
       },
       tip: {
-        title: 'Tip | Tip',
-        desc: 'not sufficient funds | close success',
+        title: 'Tip | Tip | Tip',
+        desc: 'not sufficient funds | close success | insure success',
         btn: 'confirm'
       }
     }

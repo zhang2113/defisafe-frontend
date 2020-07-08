@@ -33,7 +33,7 @@ module.exports = {
     business: {
       insureTitle: '抵押总金额(DAI) | 投保总流水(DAI) | 总投保次数',
       useInsureTitle: "我的资料",
-      useInsureDesc: '我的投保金额 | 投保池金额',
+      useInsureDesc: '我的投保金额 | 投保池金额 | 我的DSE',
       insureBtn: '我要投保',
       clearBtn: '提取资产',
       insureDescTitle: '我的资产',
@@ -70,8 +70,8 @@ module.exports = {
         btn: '确定'
       },
       tip: {
-        title: '提示 | 提示',
-        desc: '余额不足 | 提取成功',
+        title: '提示 | 提示 | 提示',
+        desc: '余额不足 | 提取成功 | 投保成功',
         btn: '确定'
       }
     }

@@ -21,6 +21,9 @@
       margin-left: 10px;
       vertical-align: bottom;
     }
+    .head-left {
+      cursor: pointer;
+    }
     .head-right {
       color: #fff;
       .account, .net-type {
@@ -198,6 +201,11 @@
       color: #FFF;
       font-size: 18px;
       padding: 12px 0;
+    }
+    /deep/.ratio-input {
+      .el-input__inner {
+        padding-right: 0;
+      }
     }
   }
 }
