@@ -33,7 +33,7 @@
           let netType = window.ethereum.networkVersion;
 
           // Determine the current network type
-          if ((netType == 1 || netType == 3) && isLogin) {
+          if ((netType == 3) && isLogin) {
             this.$router.replace('/insure');
           }
         }
@@ -46,7 +46,7 @@
 
         let netType = window.ethereum.networkVersion;
 
-        if (netType != 1 && netType != 3) {
+        if (netType != 3) {
           this.$alert(this.$t('modal.login.desc'), this.$t('modal.login.title'), {
             confirmButtonText: this.$t('modal.login.btn')
           });

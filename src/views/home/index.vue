@@ -5,22 +5,22 @@
         <img src="../../imgs/logo.png" alt />
         <span class="text">DefiSafe</span>
       </div>
-      <div class="fr language">
-        <el-dropdown trigger='click' @command='changeLanguage'>
-          <span class="el-dropdown-title">
-            {{$i18n.locale == 'zh' ? "中文简体" : "Englist"}}
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="zh">中文简体</el-dropdown-item>
-            <el-dropdown-item command="en">English</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
       <div class="fr menu">
         <ul>
           <li class="m-item">
-            <a href="/DEFISAFE1.pdf" target="_blank">{{$t('home.head.list.doc')}}</a>
+            <a href="/DEFISAFE_Chinese1.0.pdf" target="_blank">{{$t('home.head.list.doc')}}</a>
+          </li>
+          <li class="language m-item">
+            <el-dropdown trigger='click' @command='changeLanguage'>
+              <span class="el-dropdown-title">
+                {{$i18n.locale == 'zh' ? "中文简体" : "Englist"}}
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="zh">中文简体</el-dropdown-item>
+                <el-dropdown-item command="en">English</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </li>
           <li class="m-item">
             <img @click='goGithub' class="git-icon" src="../../imgs/github.png" alt="">
@@ -156,4 +156,5 @@
 
 <style lang="scss" scoped>
   @import './index.scss';
+  @import './mobile.scss';
 </style>

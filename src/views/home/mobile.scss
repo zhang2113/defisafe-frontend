@@ -1,0 +1,53 @@
+@media (max-width: 960px) {
+    .home {
+        .head {
+          padding: 0 15px;
+          .logo {
+            .text {
+              display: none;
+            }
+          }
+        }
+        .nav {
+          height: 400px;
+          .nav-outer {
+            .desc {
+                padding: 0 15px;
+                text-align: center;
+            }
+            .menu {
+                padding: 0 15px;
+                text-align: center;
+            }
+          }
+        }
+        .content {
+          .advantage {
+            width: 100%;
+            padding: 50px 0;
+            .feature-center {
+              width: 100%;
+              padding: 30px 15px;
+            }
+          }
+          .introduce {
+            .i_outer {
+              width: 100%;
+              .i_item {
+                width: 100%;
+                padding: 0 15px;
+              }
+              .i_item_img {
+                padding: 30px 100px;
+              }
+              .i_desc {
+                padding-right: 15px;
+              }
+              .i_desc1 {
+                padding-left: 15px;
+              }
+            }
+          }
+        }
+      }
+}

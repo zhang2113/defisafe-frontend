@@ -19,7 +19,9 @@
       }
     }
     /deep/.language {
-      margin-left: 50px;
+      .el-dropdown {
+        vertical-align: top;
+      }
       .el-dropdown-title {
         color: #fff;
         cursor: pointer;
@@ -47,7 +49,7 @@
     height: 600px;
     width: 100%;
     position: relative;
-    top: -60px;
+    margin-top: -60px;
     background: url("../../imgs/nav-bg.png") no-repeat;
     background-size: cover;
     background-position: center center;

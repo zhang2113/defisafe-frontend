@@ -54,7 +54,7 @@ module.exports = {
     login: {
       title: 'Tip',
       btn: "confirm",
-      desc: 'Please be sure to install the Metamask wallet and use the Ropsten network or the main network'
+      desc: 'Please be sure to install the Metamask wallet and use the Ropsten network'
     },
     insure: {
       start: {

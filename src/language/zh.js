@@ -54,7 +54,7 @@ module.exports = {
     login: {
       title: '提示',
       btn: "确定",
-      desc: '请确认安装metamask钱包并使用Ropsten网络或者主网'
+      desc: '请确认安装metamask钱包并使用Ropsten网络'
     },
     insure: {
       start: {

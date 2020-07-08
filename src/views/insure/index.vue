@@ -1,5 +1,6 @@
 <template>
-  <div v-loading="isLoad" :element-loading-text="$t('insure.load.text')" class="insure">
+  <div v-loading="isLoad" :element-loading-text="$t('insure.load.text')" element-loading-background="rgba(0, 0, 0, 0.8)"
+    class="insure">
     <img width="100%" class="bg-img" src="../../imgs/bg.png" alt="bg">
     <div class="container">
       <!-- head -->
@@ -64,10 +65,10 @@
             <div class="title">{{$t('insure.business.insureDescTitle')}}</div>
             <div class="account-list">
               <el-row class="a-item a-head">
-                <el-col :span="20">
+                <el-col :span="16">
                   <div>{{$tc('insure.business.insureDescTb', 1)}}</div>
                 </el-col>
-                <el-col :span="4">
+                <el-col :span="8">
                   <div class="amount">{{$tc('insure.business.insureDescTb', 2)}}</div>
                 </el-col>
               </el-row>
@@ -135,7 +136,8 @@
         </div>
         <div>
           <span>{{$t('modal.insure.start.ratio')}}：</span>
-          <el-input style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio" placeholder=""></el-input>
+          <el-input style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio" placeholder="">
+          </el-input>
           <span>%</span>
         </div>
         <div>
@@ -224,7 +226,7 @@
         let isLogin = await window.ethereum._metamask.isUnlocked();
 
         let netType = window.ethereum.networkVersion;
-        if ((netType != 1 && netType != 3) || !hasInstallWallet || !isLogin) {
+        if ((netType != 3) || !hasInstallWallet || !isLogin) {
           this.$router.push('/login');
           return;
         }
@@ -266,13 +268,16 @@
             .on("transactionHash", hash => {
               this.isLoad = true;
               this.showInsure = false;
+              sessionStorage.setItem('txHash', 1);
             })
             .on('receipt', async receipt => {
               this.isLoad = false;
+              sessionStorage.removeItem('txHash');
               this.getData();
             })
             .on('error', error => {
               this.isLoad = false;
+              sessionStorage.removeItem('txHash');
               console.error(error);
             });
         } else {
@@ -285,13 +290,14 @@
             console.error(err);
             return;
           }
-        
+
           if (checkRes != 0) {
             //approve
             ct.methods.approve(contract.addr, 0).send({ from: this.account })
               .on("transactionHash", hash => {
                 this.showInsure = false;
                 this.isLoad = true;
+                sessionStorage.setItem('txHash', 1);
               })
               .on('receipt', async receipt => {
                 ct.methods
@@ -307,20 +313,24 @@
                       })
                       await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
                       this.isLoad = false;
+                      sessionStorage.removeItem('txHash');
                       this.getData();
                     } catch (error) {
+                      sessionStorage.removeItem('txHash');
                       console.log(error);
                       this.isLoad = false;
                     }
                   })
                   .on('error', error => {
                     this.isLoad = false;
+                    sessionStorage.removeItem('txHash');
                     console.error(error);
                   });
               })
               .on('error', error => {
                 this.showInsure = false;
                 this.isLoad = false;
+                sessionStorage.removeItem('txHash');
                 console.log(error);
               });
           } else {
@@ -330,6 +340,7 @@
               .on("transactionHash", hash => {
                 this.showInsure = false;
                 this.isLoad = true;
+                sessionStorage.setItem('txHash', 1);
               })
               .on('receipt', async receipt => {
 
@@ -342,13 +353,16 @@
                   })
                   await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
                   this.isLoad = false;
+                  sessionStorage.removeItem('txHash');
                   this.getData();
                 } catch (error) {
                   this.isLoad = false;
+                  sessionStorage.removeItem('txHash');
                   console.log(error);
                 }
               })
               .on('error', error => {
+                sessionStorage.removeItem('txHash');
                 this.isLoad = false;
               });
           }
@@ -389,8 +403,10 @@
           .on("transactionHash", hash => {
             this.showClear = false;
             this.isLoad = true;
+            sessionStorage.setItem('txHash', 1);
           })
           .on('receipt', async receipt => {
+            sessionStorage.removeItem('txHash');
             this.isLoad = false;
             this.$alert(this.$tc('modal.insure.tip.desc', 1), this.$tc('modal.insure.tip.title', 1), {
               confirmButtonText: this.$t('modal.insure.tip.btn')
@@ -399,6 +415,7 @@
           })
           .on('error', error => {
             console.log(error);
+            sessionStorage.removeItem('txHash');
             this.showClear = false;
             this.isLoad = false;
           });
@@ -409,6 +426,12 @@
         this.account = window.ethereum.selectedAddress;
         this.useInsureDesc = [];
         this.useInsureDesc = Object.keys(this.mtypes).map(e => { return { type: e, amount: 0 } });
+
+        // if (sessionStorage.txHash) {
+        //   // pending
+        //   this.isLoad = true;
+        // }
+
         if (!this.web3) {
           this.web3 = this.initWeb3();
         }
