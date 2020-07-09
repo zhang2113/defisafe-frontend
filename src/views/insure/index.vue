@@ -173,6 +173,8 @@
   import Web3 from "web3";
   import tokenIcon from '@/imgs/token';
   import contract from "@/util/contract";
+  import { ropsten } from "@/util/tokenContract";
+  import { main } from "@/util/tokenContract";
   import { moneyType, netIds } from "@/util/type";
   export default {
     data() {
@@ -253,8 +255,8 @@
 
 
         let ct = new this.web3.eth.Contract(
-          contract[contractKey].abi,
-          contract[contractKey].addr
+          ropsten[contractKey].abi,
+          ropsten[contractKey].addr
         );
 
         if (this.currentToken < parseFloat(this.insure)) {
@@ -269,7 +271,7 @@
         if (this.mtype == 1) {
           //eth
 
-          this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
+          this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
             .on("transactionHash", hash => {
               this.isLoad = true;
               this.showInsure = false;
@@ -313,13 +315,7 @@
                   .send({ from: this.account })
                   .on('receipt', async receipt => {
                     try {
-                      console.table({
-                        tokenId: this.mtype,
-                        insureAmount: insureAmount,
-                        addr: contract[contractKey].addr,
-                        type: contractKey
-                      })
-                      await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
+                      await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
                       this.isLoad = false;
                       this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
                         confirmButtonText: 'ok'
@@ -356,13 +352,7 @@
               .on('receipt', async receipt => {
 
                 try {
-                  console.table({
-                    tokenId: this.mtype,
-                    insureAmount: insureAmount,
-                    addr: contract[contractKey].addr,
-                    type: contractKey
-                  })
-                  await this.myContract.methods.deposit(this.mtype, insureAmount, contract[contractKey].addr, this.insureRatio).send({ from: this.account });
+                  await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
                   this.isLoad = false;
                   this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
                     confirmButtonText: 'ok'
@@ -401,8 +391,8 @@
 
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = new this.web3.eth.Contract(
-          contract[contractKey]['abi'],
-          contract[contractKey]['addr']
+          ropsten[contractKey]['abi'],
+          ropsten[contractKey]['addr']
         );
 
         ct.methods.balanceOf(this.account).call().then(res => {
@@ -461,13 +451,28 @@
         //des
 
         let desContract = new this.web3.eth.Contract(
-          contract.dse.abi,
-          contract.dse.addr
+          ropsten.dse.abi,
+          ropsten.dse.addr
         );
 
+        //main net
+        let mainWeb3 = new Web3(
+            new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/fe4e6b50dc8944efad81cfed627f465c")
+          )
+
+        let mainConstact = new mainWeb3.eth.Contract(
+          main.knc.abi,
+          main.knc.addr
+        );
+
+        mainConstact.methods.balanceOf(this.account).call().then(res => {
+          console.log('main', res);
+        });
+
         desContract.methods.balanceOf(this.account).call().then(res => {
-          console.log(res && (res / 1000).toFixed(4))
-          this.userDSE = res && (res / 1e18).toFixed(4);
+          if(res > 0) {
+            this.userDSE = (res / 1e18).toFixed(4);
+          }
         });
 
         //Insure Amount
