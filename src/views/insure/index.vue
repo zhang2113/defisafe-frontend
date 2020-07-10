@@ -140,12 +140,13 @@
         </div>
         <div>
           <span>{{$t('modal.insure.start.ratio')}}：</span>
-          <el-input max='90' class="ratio-input" min='5' style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio" placeholder="">
+          <el-input max='90' class="ratio-input" min='5' style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio"
+            placeholder="">
           </el-input>
           <span>%</span>
         </div>
         <div>
-          <button @click="insureModalSave">{{$t('modal.insure.start.btn')}}</button>
+          <el-button :loading="btnLoad" @click="insureModalSave" type="primary">{{$t('modal.insure.start.btn')}}</el-button>
         </div>
       </div>
     </el-dialog>
@@ -161,7 +162,7 @@
           </el-select>
         </div>
         <div>
-          <button @click="clearModalSave">{{$t('modal.insure.end.btn')}}</button>
+          <el-button :loading="btnLoad" @click="clearModalSave" type="primary">{{$t('modal.insure.end.btn')}}</el-button>
         </div>
       </div>
     </el-dialog>
@@ -180,6 +181,7 @@
     data() {
       return {
         tokenIcon: tokenIcon,
+        btnLoad: false,
         netType: '',
         insureRatio: 5,
         currentToken: 0,
@@ -251,6 +253,7 @@
         this.showInsure = true;
       },
       async insureModalSave() {
+
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
 
 
@@ -265,7 +268,7 @@
           });
           return;
         }
-
+        this.btnLoad = true;
         let insureAmount = this.insure * 1e18 + '';
 
         if (this.mtype == 1) {
@@ -274,6 +277,9 @@
           this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
             .on("transactionHash", hash => {
               this.isLoad = true;
+              this.btnLoad = false;
+              this.insure = 0;
+              this.insureRatio = 5;
               this.showInsure = false;
               sessionStorage.setItem('txHash', 1);
             })
@@ -287,6 +293,10 @@
             })
             .on('error', error => {
               this.isLoad = false;
+              this.btnLoad = false;
+              this.insure = 0;
+              this.insureRatio = 5;
+              this.showInsure = false;
               sessionStorage.removeItem('txHash');
               console.error(error);
             });
@@ -305,6 +315,9 @@
             //approve
             ct.methods.approve(contract.addr, 0).send({ from: this.account })
               .on("transactionHash", hash => {
+                this.btnLoad = false;
+                this.insureRatio = 5;
+                this.insure = 0;
                 this.showInsure = false;
                 this.isLoad = true;
                 sessionStorage.setItem('txHash', 1);
@@ -335,8 +348,11 @@
                   });
               })
               .on('error', error => {
-                this.showInsure = false;
                 this.isLoad = false;
+                this.btnLoad = false;
+                this.insure = 0;
+                this.insureRatio = 5;
+                this.showInsure = false;
                 sessionStorage.removeItem('txHash');
                 console.log(error);
               });
@@ -346,7 +362,10 @@
               .send({ from: this.account })
               .on("transactionHash", hash => {
                 this.showInsure = false;
+                this.insureRatio = 5;
+                this.insure = 0;
                 this.isLoad = true;
+                this.btnLoad = false;
                 sessionStorage.setItem('txHash', 1);
               })
               .on('receipt', async receipt => {
@@ -367,6 +386,10 @@
               })
               .on('error', error => {
                 sessionStorage.removeItem('txHash');
+                this.btnLoad = false;
+                this.insure = 0;
+                this.insureRatio = 5;
+                this.showInsure = false;
                 this.isLoad = false;
               });
           }
@@ -404,10 +427,14 @@
         this.showClear = true;
       },
       clearModalSave() {
+        this.btnLoad = true;
         this.myContract.methods.withdrawAssets(this.account, this.mtype).send({ from: this.account })
           .on("transactionHash", hash => {
             this.showClear = false;
             this.isLoad = true;
+            this.btnLoad = false;
+            this.insureRatio = 5;
+            this.insure = 0;
             sessionStorage.setItem('txHash', 1);
           })
           .on('receipt', async receipt => {
@@ -421,6 +448,10 @@
           .on('error', error => {
             console.log(error);
             sessionStorage.removeItem('txHash');
+            this.showClear = false;
+            this.btnLoad = false;
+            this.insure = 0;
+            this.insureRatio = 5;
             this.showClear = false;
             this.isLoad = false;
           });
@@ -457,8 +488,8 @@
 
         //main net
         let mainWeb3 = new Web3(
-            new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/fe4e6b50dc8944efad81cfed627f465c")
-          )
+          new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/fe4e6b50dc8944efad81cfed627f465c")
+        )
 
         let mainConstact = new mainWeb3.eth.Contract(
           main.knc.abi,
@@ -470,7 +501,7 @@
         });
 
         desContract.methods.balanceOf(this.account).call().then(res => {
-          if(res > 0) {
+          if (res > 0) {
             this.userDSE = (res / 1e18).toFixed(4);
           }
         });
