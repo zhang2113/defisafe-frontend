@@ -59,6 +59,11 @@
                 <div class="label">{{$tc('insure.business.useInsureDesc', 2)}}</div>
                 <div class="number">{{userDSE}}</div>
               </div>
+              <div class="cash-item clear">
+                <img class="icon" src="../../imgs/dst-icon.png" alt="">
+                <div class="label">我的DST</div>
+                <div class="number">{{userDST}}</div>
+              </div>
               <div class="cash-btn-group">
                 <el-button @click="showClearModal">{{$t('insure.business.clearBtn')}}</el-button>
                 <el-button type="primary" @click="showInsureModal">{{$t('insure.business.insureBtn')}}</el-button>
@@ -177,6 +182,7 @@
   import { ropsten } from "@/util/tokenContract";
   import { main } from "@/util/tokenContract";
   import { moneyType, netIds } from "@/util/type";
+  const BigNumber = require('bignumber.js');
   export default {
     data() {
       return {
@@ -203,7 +209,8 @@
         useInsureDesc: [],
         totalInsureAmount: 0,
         totalInsureMoney: 0,
-        userDSE: 0
+        userDSE: 0,
+        userDST: 0
       };
     },
     computed: {
@@ -269,8 +276,8 @@
           return;
         }
         this.btnLoad = true;
-        let insureAmount = this.insure * 1e18 + '';
-
+        let insureAmount = new BigNumber(this.$util.toFixedStr(this.insure * 1e18) + '');
+        console.log('111', insureAmount)
         if (this.mtype == 1) {
           //eth
 
@@ -486,6 +493,12 @@
           ropsten.dse.addr
         );
 
+        //dst
+        let dstContract = new this.web3.eth.Contract(
+          ropsten.dst.abi,
+          ropsten.dst.addr
+        );
+
         //main net
         let mainWeb3 = new Web3(
           new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/fe4e6b50dc8944efad81cfed627f465c")
@@ -503,6 +516,12 @@
         desContract.methods.balanceOf(this.account).call().then(res => {
           if (res > 0) {
             this.userDSE = (res / 1e18).toFixed(4);
+          }
+        });
+
+        dstContract.methods.balanceOf(this.account).call().then(res => {
+          if (res > 0) {
+            this.userDST = (res / 1e18).toFixed(4);
           }
         });
 
