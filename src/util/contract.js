@@ -1,5 +1,5 @@
 export default {
-  addr: "0x93be1eea6b51082155e0b0088870f37d0c792680",
+  addr: "0x8a92904CCFc10935B1B3a5b18e3b04c2a0B91EeD",
   abi: [
     {
       "inputs": [
@@ -15,29 +15,6 @@ export default {
         }
       ],
       "name": "addGuaranteeToken",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_tokenID",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_amount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "_acceptAddr",
-          "type": "address"
-        }
-      ],
-      "name": "allocateAssets",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -302,28 +279,23 @@ export default {
       "type": "function"
     },
     {
+      "anonymous": false,
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "_tokenType",
-          "type": "uint256"
+          "indexed": false,
+          "internalType": "address",
+          "name": "name",
+          "type": "address"
         },
         {
+          "indexed": false,
           "internalType": "uint256",
-          "name": "_amount",
+          "name": "mineTokens",
           "type": "uint256"
         }
       ],
-      "name": "getTokenPrice",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
+      "name": "MineTokensEvent",
+      "type": "event"
     },
     {
       "inputs": [
@@ -360,6 +332,45 @@ export default {
         }
       ],
       "name": "setDaiAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "setDefiSafeTokenAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "setDefiSafeTokenOperateAccount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "setDefiSafeTokenOwnerAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -413,6 +424,32 @@ export default {
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "_openType",
+          "type": "uint256"
+        }
+      ],
+      "name": "setIsAbnormalEnvironment",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_openType",
+          "type": "uint256"
+        }
+      ],
+      "name": "setIsOpenAssetValidation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
           "name": "_fees",
           "type": "uint256"
         }
@@ -436,29 +473,13 @@ export default {
       "type": "event"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_srcToken",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_destToken",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "swapTokenToToken",
+      "inputs": [],
+      "name": "startCollectionOfSharingFees",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "bool",
           "name": "",
-          "type": "uint256"
+          "type": "bool"
         }
       ],
       "stateMutability": "nonpayable",
@@ -467,17 +488,12 @@ export default {
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_name",
+          "internalType": "address payable",
+          "name": "newOwner",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_tokenType",
-          "type": "uint256"
         }
       ],
-      "name": "withdrawAssets",
+      "name": "transferOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -601,6 +617,42 @@ export default {
       "type": "fallback"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_type",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateCostAccount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_name",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenType",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawAssets",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "stateMutability": "payable",
       "type": "receive"
     },
@@ -619,7 +671,85 @@ export default {
     },
     {
       "inputs": [],
+      "name": "defiSafeTokenAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "defiSafeTokenOperateAccount",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "defiSafeTokenOwnerAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "getAssetsTotalForPlatform_ever",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getEnvAbnormalTokenID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getEnvCheckState",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getEnvSafeMode",
       "outputs": [
         {
           "internalType": "uint256",
@@ -702,6 +832,45 @@ export default {
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "getPlatformContractCurrentCost",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getPlatformCost_1",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getPlatformCost_2",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -734,6 +903,32 @@ export default {
         }
       ],
       "name": "getTokenPoolUserBalanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTotalFreeTokens",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTotalMineTokens",
       "outputs": [
         {
           "internalType": "uint256",
