@@ -518,12 +518,14 @@
         });
 
         desContract.methods.balanceOf(this.account).call().then(res => {
+          console.log('des', res);
           if (res > 0) {
             this.userDSE = (res / 1e18).toFixed(4);
           }
         });
 
         dstContract.methods.balanceOf(this.account).call().then(res => {
+          console.log('dst', res);
           if (res > 0) {
             this.userDST = (res / 1e18).toFixed(4);
           }
