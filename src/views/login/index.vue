@@ -29,7 +29,7 @@
         this.hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
 
         if (this.hasInstallWallet) {
-          let isLogin = await window.ethereum._metamask.isUnlocked();
+          let isLogin = window.ethereum.selectedAddress;
           let netType = window.ethereum.networkVersion;
 
           // Determine the current network type
@@ -62,6 +62,8 @@
             .catch(reason => {
               alert("login fail");
             });
+        } else {
+          this.$router.replace("/insure");
         }
       }
     }

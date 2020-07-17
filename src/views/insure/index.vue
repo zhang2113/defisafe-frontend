@@ -64,7 +64,7 @@
                 <div class="label">我的dst</div>
                 <div class="number">{{userDST}}</div>
               </div>
-              
+
               <div class="cash-btn-group">
                 <el-button @click="showClearModal">{{$t('insure.business.clearBtn')}}</el-button>
                 <el-button type="primary" @click="showInsureModal">{{$t('insure.business.insureBtn')}}</el-button>
@@ -215,8 +215,12 @@
     },
     computed: {
       viewAccount() {
-        let account = this.account.slice(0, 6) + "..." + this.account.slice(-4, -1);
-        return account;
+        if (this.account) {
+          let account = this.account.slice(0, 6) + "..." + this.account.slice(-4, -1);
+          return account;
+        } else {
+          return '';
+        }
       }
     },
     created() {
@@ -239,10 +243,9 @@
       //init necessary data
       async initApp() {
         let hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
-        let isLogin = await window.ethereum._metamask.isUnlocked();
-
+        
         let netType = window.ethereum.networkVersion;
-        if ((netType != 3) || !hasInstallWallet || !isLogin) {
+        if ((netType != 3) || !hasInstallWallet || !window.ethereum.selectedAddress) {
           this.$router.push('/login');
           return;
         }
