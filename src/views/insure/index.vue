@@ -60,8 +60,8 @@
                 <div class="number">{{userDSE}}</div>
               </div>
               <div class="cash-item clear">
-                <img class="icon" src="../../imgs/logo.png" alt="">
-                <div class="label">我的dst</div>
+                <img class="icon" src="../../imgs/dst-icon.png" alt="">
+                <div class="label">我的DST</div>
                 <div class="number">{{userDST}}</div>
               </div>
 
@@ -183,6 +183,7 @@
   import { ropsten } from "@/util/tokenContract";
   import { main } from "@/util/tokenContract";
   import { moneyType, netIds } from "@/util/type";
+  const BigNumber = require('bignumber.js');
   export default {
     data() {
       return {
@@ -279,8 +280,8 @@
           return;
         }
         this.btnLoad = true;
-        let insureAmount = this.insure * 1e18 + '';
-
+        let insureAmount = new BigNumber(this.$util.toFixedStr(this.insure * 1e18) + '');
+        console.log('111', insureAmount)
         if (this.mtype == 1) {
           //eth
 
