@@ -280,7 +280,7 @@
           return;
         }
         this.btnLoad = true;
-        let insureAmount = new BigNumber(this.$util.toFixedStr(this.insure * 1e18) + '');
+        let insureAmount = this.$util.toFixedStr(this.insure * 1e18) + '';
         console.log('111', insureAmount)
         if (this.mtype == 1) {
           //eth
