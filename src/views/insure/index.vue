@@ -222,7 +222,7 @@
     },
     methods: {
       goLowVersion() {
-        window.location = window.location.host + 'v2';
+        window.location.href = 'http://' + window.location.host + '/v2';
       },
       initWeb3() {
         if (window.web3) {
