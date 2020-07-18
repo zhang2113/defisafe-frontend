@@ -233,7 +233,7 @@
     },
     methods: {
       goLowVersion() {
-        window.location = window.location.host + 'v1';
+        window.location = 'http://' + window.location.host + '/v1';
       },
       initWeb3() {
         if (window.web3) {
