@@ -1,5 +1,5 @@
 export default {
-  addr: "0x8a92904CCFc10935B1B3a5b18e3b04c2a0B91EeD",
+  addr: "0x6FBa08BCB03989d849697676C2D044b13A05c6B1",
   abi: [
     {
       "inputs": [
@@ -903,6 +903,19 @@ export default {
         }
       ],
       "name": "getTokenPoolUserBalanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTotalCompensation_ever",
       "outputs": [
         {
           "internalType": "uint256",
