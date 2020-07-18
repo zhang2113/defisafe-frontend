@@ -9,6 +9,7 @@
           <span class="text">DefiSafe</span>
         </div>
         <div class="fr head-right">
+            <div @click='goLowVersion' class="version">v2.0版本</div>
           <div class="net-type" v-if='netType == "Ropsten"'>
             {{netType + ' ' + $t('insure.net')}}
           </div>
@@ -220,6 +221,9 @@
       this.getData();
     },
     methods: {
+      goLowVersion() {
+        window.location = window.location.host + 'v2';
+      },
       initWeb3() {
         if (window.web3) {
           return new Web3(window.web3.currentProvider);
