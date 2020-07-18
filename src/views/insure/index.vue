@@ -9,6 +9,7 @@
           <span class="text">DefiSafe</span>
         </div>
         <div class="fr head-right">
+          <div @click='goLowVersion' class="version">v1.0版本</div>
           <div class="net-type" v-if='netType == "Ropsten"'>
             {{netType + ' ' + $t('insure.net')}}
           </div>
@@ -183,7 +184,6 @@
   import { ropsten } from "@/util/tokenContract";
   import { main } from "@/util/tokenContract";
   import { moneyType, netIds } from "@/util/type";
-  const BigNumber = require('bignumber.js');
   export default {
     data() {
       return {
@@ -232,6 +232,9 @@
       this.getData();
     },
     methods: {
+      goLowVersion() {
+        window.location = window.location.host + 'v1';
+      },
       initWeb3() {
         if (window.web3) {
           return new Web3(window.web3.currentProvider);
@@ -280,11 +283,12 @@
           return;
         }
         this.btnLoad = true;
-        let insureAmount = this.$util.toFixedStr(this.insure * 1e18) + '';
-        console.log('111', insureAmount)
+        let insureAmount = this.$util.toFixedStr(this.insure * 1e18);
+        insureAmount = new this.web3.utils.BN(String(insureAmount))
+        // insureAmount = BigNumber.from(String(insureAmount));
+        console.log(insureAmount)
         if (this.mtype == 1) {
           //eth
-
           this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
             .on("transactionHash", hash => {
               this.isLoad = true;
@@ -309,7 +313,7 @@
               this.insureRatio = 5;
               this.showInsure = false;
               sessionStorage.removeItem('txHash');
-              console.error(error);
+              console.log(error);
             });
         } else {
           //other

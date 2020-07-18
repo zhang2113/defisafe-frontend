@@ -26,7 +26,7 @@
     }
     .head-right {
       color: #fff;
-      .account, .net-type {
+      .account, .net-type, .version {
         display: inline-block;
         vertical-align: top;
         height: 36px;
@@ -37,6 +37,14 @@
         //   background: #7869C3;
         //   transition: background .15s linear;
         // }
+      }
+      .version {
+        color: #1aa2e5;
+        margin-right: 10px;
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
       }
       .net-type {
         margin-right: 15px;
