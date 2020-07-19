@@ -39,14 +39,11 @@
         // }
       }
       .version {
-        color: #1aa2e5;
-        margin-right: 10px;
+        
         cursor: pointer;
-        &:hover {
-          text-decoration: underline;
-        }
+        
       }
-      .net-type {
+      .net-type, .version {
         margin-right: 15px;
         background: #C7E7FF;
         color: #2587FF;
@@ -71,12 +68,12 @@
     }
   }
   .nav {
-    margin-top: 25px;
+    margin-top: 40px;
     >div {
       width: 33.333%;
     }
     .title {
-      font-size: 18px;
+      font-size: 15px;
       font-weight: bold;
       color: #333;
       margin-bottom: 10px;
