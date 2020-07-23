@@ -32,6 +32,7 @@ module.exports = {
   insure: {
     business: {
       insureTitle: '投保资产(DAI) | 投保总资产(DAI) | 总投保次数',
+      insureTitle2: '补偿总金额(DAI) | 已被释放DST',
       useInsureTitle: "我的资料",
       useInsureDesc: '我的投保金额 | 投保池金额 | 我的DSE',
       insureBtn: '我要投保',

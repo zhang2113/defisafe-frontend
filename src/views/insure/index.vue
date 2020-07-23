@@ -39,11 +39,11 @@
       </div>
       <div class="nav clear">
         <div class="fl">
-          <div class="title">补偿总金额(DAI)</div>
+          <div class="title">{{$tc('insure.business.insureTitle2', 1)}}</div>
           <div class="amount">{{offsetMoney}}</div>
         </div>
         <div class="fl">
-          <div class="title">已被释放DST</div>
+          <div class="title">{{$tc('insure.business.insureTitle2', 2)}}</div>
           <div class="amount">{{displayDES}}</div>
         </div>
         <!-- <div class="fl">
