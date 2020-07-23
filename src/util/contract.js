@@ -1,5 +1,5 @@
 export default {
-  addr: "0x6FBa08BCB03989d849697676C2D044b13A05c6B1",
+  addr: "0x6357744fFAd5AC755BB7a1C4aB3D08C1a251C747",
   abi: [
     {
       "inputs": [
@@ -232,6 +232,35 @@ export default {
       ],
       "name": "DepositMarginConversion",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenType",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_insuranceRatio",
+          "type": "uint256"
+        }
+      ],
+      "name": "externalSlipProtection",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [],
