@@ -25,17 +25,31 @@
       <!-- nav -->
       <div class="nav clear">
         <div class="fl">
-          <div class="title">{{$tc('insure.business.insureTitle', 0)}}</div>
+          <div class="title red">{{$tc('insure.business.insureTitle', 0)}}</div>
           <div class="amount">{{cashMoneyFromRule}}</div>
         </div>
         <div class="fl">
-          <div class="title">{{$tc('insure.business.insureTitle', 1)}}</div>
+          <div class="title red">{{$tc('insure.business.insureTitle', 1)}}</div>
           <div class="amount">{{totalInsureMoney}}</div>
         </div>
         <div class="fl">
           <div class="title">{{$tc('insure.business.insureTitle', 2)}}</div>
           <div class="amount">{{totalInsureAmount}}</div>
         </div>
+      </div>
+      <div class="nav clear">
+        <div class="fl">
+          <div class="title">{{$tc('insure.business.insureTitle2', 1)}}</div>
+          <div class="amount">{{offsetMoney}}</div>
+        </div>
+        <div class="fl">
+          <div class="title">{{$tc('insure.business.insureTitle2', 2)}}</div>
+          <div class="amount">{{displayDES}}</div>
+        </div>
+        <!-- <div class="fl">
+          <div class="title">{{$tc('insure.business.insureTitle', 2)}}</div>
+          <div class="amount">{{totalInsureAmount}}</div>
+        </div> -->
       </div>
       <!-- nav end -->
 
@@ -211,13 +225,15 @@
         totalInsureAmount: 0,
         totalInsureMoney: 0,
         userDSE: 0,
-        userDST: 0
+        userDST: 0,
+        offsetMoney: 0,
+        displayDES: 0 
       };
     },
     computed: {
       viewAccount() {
         if (this.account) {
-          let account = this.account.slice(0, 6) + "..." + this.account.slice(-4, -1);
+          let account = this.account.slice(0, 6) + "..." + this.account.slice(-5, -1);
           return account;
         } else {
           return '';
@@ -540,6 +556,14 @@
           .getInsuranceTotalMoneyForuser(this.account)
           .call();
         this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
+
+        this.displayDES = await this.myContract.methods
+          .getTotalMineTokens()
+          .call();
+        this.displayDES = (this.displayDES / 1e18).toFixed(4);
+
+        this.offsetMoney =  await this.myContract.methods.getTotalCompensation_ever().call();
+        this.offsetMoney = (this.offsetMoney / 1e18).toFixed(4);
 
         //Capital Pool
         this.totalMoneyFromRule = await this.myContract.methods

@@ -32,8 +32,9 @@ module.exports = {
   insure: {
     business: {
       insureTitle: 'Total mortgage amount (DAI) | Total insurance account(DAI) | Total number of applications',
+      insureTitle2: 'compensation(DAI) | release DST',
       useInsureTitle: "my profile",
-      useInsureDesc: 'The amount of my insurance | Pool amount | DSE',
+      useInsureDesc: 'my insurance | Pool amount | DSE',
       insureBtn: 'Insure',
       clearBtn: 'Clearing',
       insureDescTitle: 'My assets',
