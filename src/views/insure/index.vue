@@ -9,7 +9,7 @@
           <span class="text">DefiSafe</span>
         </div>
         <div class="fr head-right">
-          <div @click='goLowVersion' class="version">v1.0版本</div>
+          <div @click='goLowVersion' class="version">v2.0</div>
           <div class="net-type" v-if='netType == "Ropsten"'>
             {{netType + ' ' + $t('insure.net')}}
           </div>
@@ -76,7 +76,7 @@
               </div>
               <div class="cash-item clear">
                 <img class="icon" src="../../imgs/dst-icon.png" alt="">
-                <div class="label">我的DST</div>
+                <div class="label">DST</div>
                 <div class="number">{{userDST}}</div>
               </div>
 
@@ -227,7 +227,7 @@
         userDSE: 0,
         userDST: 0,
         offsetMoney: 0,
-        displayDES: 0 
+        displayDES: 0
       };
     },
     computed: {
@@ -249,7 +249,7 @@
     },
     methods: {
       goLowVersion() {
-        window.location = 'http://' + window.location.host + '/v1';
+        window.location = 'http://' + window.location.host + '/v2';
       },
       initWeb3() {
         if (window.web3) {
@@ -263,7 +263,7 @@
       //init necessary data
       async initApp() {
         let hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
-        
+
         let netType = window.ethereum.networkVersion;
         if ((netType != 3) || !hasInstallWallet || !window.ethereum.selectedAddress) {
           this.$router.push('/login');
@@ -302,7 +302,7 @@
         let insureAmount = this.$util.toFixedStr(this.insure * 1e18);
         insureAmount = new this.web3.utils.BN(String(insureAmount))
         // insureAmount = BigNumber.from(String(insureAmount));
-        console.log(insureAmount)
+
         if (this.mtype == 1) {
           //eth
           this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
@@ -315,6 +315,7 @@
               sessionStorage.setItem('txHash', 1);
             })
             .on('receipt', async receipt => {
+              console.log('receipt', receipt)
               this.isLoad = false;
               sessionStorage.removeItem('txHash');
               this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
@@ -330,6 +331,9 @@
               this.showInsure = false;
               sessionStorage.removeItem('txHash');
               console.log(error);
+              this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+                confirmButtonText: '确定'
+              });
             });
         } else {
           //other
@@ -359,7 +363,8 @@
                   .send({ from: this.account })
                   .on('receipt', async receipt => {
                     try {
-                      await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
+                      let res = await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
+                      console.log(1111, res)
                       this.isLoad = false;
                       this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
                         confirmButtonText: 'ok'
@@ -370,6 +375,9 @@
                       sessionStorage.removeItem('txHash');
                       console.log(error);
                       this.isLoad = false;
+                      this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+                        confirmButtonText: '确定'
+                      });
                     }
                   })
                   .on('error', error => {
@@ -534,18 +542,18 @@
         );
 
         mainConstact.methods.balanceOf(this.account).call().then(res => {
-          console.log('main', res);
+
         });
 
         desContract.methods.balanceOf(this.account).call().then(res => {
-          console.log('des', res);
+
           if (res > 0) {
             this.userDSE = (res / 1e18).toFixed(4);
           }
         });
 
         dstContract.methods.balanceOf(this.account).call().then(res => {
-          console.log('dst', res);
+
           if (res > 0) {
             this.userDST = (res / 1e18).toFixed(4);
           }
@@ -558,11 +566,11 @@
         this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
 
         this.displayDES = await this.myContract.methods
-          .getTotalMineTokens()
+          .getTotalFreeTokens()
           .call();
         this.displayDES = (this.displayDES / 1e18).toFixed(4);
 
-        this.offsetMoney =  await this.myContract.methods.getTotalCompensation_ever().call();
+        this.offsetMoney = await this.myContract.methods.getTotalCompensation_ever().call();
         this.offsetMoney = (this.offsetMoney / 1e18).toFixed(4);
 
         //Capital Pool
