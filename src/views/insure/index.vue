@@ -9,7 +9,9 @@
           <span class="text">DefiSafe</span>
         </div>
         <div class="fr head-right">
-          <div @click='goLowVersion' class="version">v2.0</div>
+          <div class="version active">v3.0</div>
+          <div @click='goLowVersion(2)' class="version">v2.0</div>
+          <div @click='goLowVersion(1)' class="version">v1.0</div>
           <div class="net-type" v-if='netType == "Ropsten"'>
             {{netType + ' ' + $t('insure.net')}}
           </div>
@@ -248,8 +250,8 @@
       this.getData();
     },
     methods: {
-      goLowVersion() {
-        window.location = 'http://' + window.location.host + '/v2';
+      goLowVersion(version) {
+        window.location = 'http://' + window.location.host + '/v' + version;
       },
       initWeb3() {
         if (window.web3) {
@@ -283,7 +285,7 @@
         this.showInsure = true;
       },
       async insureModalSave() {
-
+        
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
 
 
@@ -302,7 +304,7 @@
         let insureAmount = this.$util.toFixedStr(this.insure * 1e18);
         insureAmount = new this.web3.utils.BN(String(insureAmount))
         // insureAmount = BigNumber.from(String(insureAmount));
-
+        
         if (this.mtype == 1) {
           //eth
           this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
@@ -313,6 +315,7 @@
               this.insureRatio = 5;
               this.showInsure = false;
               sessionStorage.setItem('txHash', 1);
+              window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
             })
             .on('receipt', async receipt => {
               console.log('receipt', receipt)
@@ -365,6 +368,7 @@
                     try {
                       let res = await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
                       console.log(1111, res)
+                      window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                       this.isLoad = false;
                       this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
                         confirmButtonText: 'ok'
@@ -412,6 +416,7 @@
                 try {
                   await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
                   this.isLoad = false;
+                  window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                   this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
                     confirmButtonText: 'ok'
                   });
@@ -475,6 +480,7 @@
             this.insureRatio = 5;
             this.insure = 0;
             sessionStorage.setItem('txHash', 1);
+            window._czc.push(['_trackEvent', '点击事件', '用户结算', this.account]);
           })
           .on('receipt', async receipt => {
             sessionStorage.removeItem('txHash');
@@ -497,6 +503,7 @@
       },
       //get page data
       async getData() {
+        window._czc.push(['_trackEvent', '加载', '投保页面打开次数']);    
         this.netType = netIds[window.ethereum.networkVersion];
         this.account = window.ethereum.selectedAddress;
         this.useInsureDesc = [];

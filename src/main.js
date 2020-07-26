@@ -22,5 +22,17 @@ new Vue({
   router,
   store,
   i18n,
-  render: h => h(App)
+  render: h => h(App),
+  watch: {
+    '$route' () {
+      if (window._czc) {
+        let location = window.location;//路由变化
+        let contentUrl = location.hash;//自定义当前url，可带上路由以此区分每个页面
+        let refererUrl = '/';
+        window._czc.push(["_setAutoPageview", false]);
+        window._czc.push(["_trackPageview", contentUrl, refererUrl])
+
+      }
+    }
+  }
 }).$mount('#app')

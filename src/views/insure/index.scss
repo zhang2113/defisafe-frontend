@@ -38,17 +38,22 @@
         //   transition: background .15s linear;
         // }
       }
-      .version {
-        
-        cursor: pointer;
-        
-      }
       .net-type, .version {
         margin-right: 15px;
         background: #C7E7FF;
         color: #2587FF;
         border-radius: 8px;
         padding: 0 12px;
+      }
+      .version {
+        background: #eee;
+        color: #333;
+        cursor: pointer;
+        &.active {
+          color: #2587FF;
+          background: #C7E7FF;
+          cursor: default;
+        }
       }
       .account {
         color: #333333;
