@@ -344,9 +344,9 @@
               this.showInsure = false;
               sessionStorage.removeItem('txHash');
               console.log(error);
-              this.$alert('合约执行错误，请反馈项目方排查', '提示', {
-                confirmButtonText: '确定'
-              });
+              // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+              //   confirmButtonText: '确定'
+              // });
             });
         } else {
           //other
@@ -389,9 +389,9 @@
                       sessionStorage.removeItem('txHash');
                       console.log(error);
                       this.isLoad = false;
-                      this.$alert('合约执行错误，请反馈项目方排查', '提示', {
-                        confirmButtonText: '确定'
-                      });
+                      // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+                      //   confirmButtonText: '确定'
+                      // });
                     }
                   })
                   .on('error', error => {
