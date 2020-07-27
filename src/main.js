@@ -11,7 +11,7 @@ Vue.config.productionTip = false
 import VueI18n from 'vue-i18n'
 Vue.use(VueI18n);
 const i18n = new VueI18n({
-  locale: 'zh',
+  locale: sessionStorage.language || 'zh',
   messages: {
     'zh': require('./language/zh'),   // 中文语言包
     'en': require('./language/en')    // 英文语言包

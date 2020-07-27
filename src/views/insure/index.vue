@@ -9,9 +9,7 @@
           <span class="text">DefiSafe</span>
         </div>
         <div class="fr head-right">
-          <div class="version active">v3.0</div>
-          <div @click='goLowVersion(2)' class="version">v2.0</div>
-          <div @click='goLowVersion(1)' class="version">v1.0</div>
+          <div class="version" @click='goLowVersion(item)' :class='{active: item == currentVersion}' v-for='item in versionArr' :key='item'>{{item}}</div>
           <div class="net-type" v-if='netType == "Ropsten"'>
             {{netType + ' ' + $t('insure.net')}}
           </div>
@@ -211,12 +209,14 @@
         isLoad: false,
         web3: null,
         mtypes: moneyType,
+        currentVersion: '', //当前合约版本
         mtype: 1, //通证
         account: "",
         money: 0,
         moneyFromRule: 0,
         totalMoneyFromRule: 0,
         cashMoneyFromRule: 0,
+        versionArr: [],
         myContract: null,
         leftChart: null,
         rightChart: null,
@@ -243,6 +243,14 @@
       }
     },
     created() {
+      let constractKeys = Object.keys(contract);
+      this.versionArr = constractKeys;
+      if(sessionStorage.version) {
+        this.currentVersion = sessionStorage.version;
+      } else {
+        this.currentVersion = constractKeys[0];
+      }
+      
       this.initApp();
     },
     mounted() {
@@ -251,7 +259,9 @@
     },
     methods: {
       goLowVersion(version) {
-        window.location = 'http://' + window.location.host + '/v' + version;
+        this.currentVersion = version;
+        sessionStorage.setItem('version', version);
+        this.getData();
       },
       initWeb3() {
         if (window.web3) {
@@ -518,12 +528,12 @@
           this.web3 = this.initWeb3();
         }
         //Web3 Contract Object
-        if (!this.myContract) {
+        
           this.myContract = new this.web3.eth.Contract(
-            contract.abi,
-            contract.addr
+            contract[this.currentVersion].abi,
+            contract[this.currentVersion].addr
           );
-        }
+        
 
         //des
 

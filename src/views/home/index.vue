@@ -135,6 +135,7 @@
     name: "Home",
     methods: {
       changeLanguage(val) {
+        sessionStorage.setItem('language', val);
         this.$i18n.locale = val;
       },
       jumpUrl(url) {
