@@ -222,7 +222,7 @@
         rightChart: null,
         showInsure: false,
         showClear: false,
-        insure: 0, //投保金额
+        insure: '', //投保金额
         useInsureDesc: [],
         totalInsureAmount: 0,
         totalInsureMoney: 0,
@@ -298,7 +298,6 @@
         
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
 
-
         let ct = new this.web3.eth.Contract(
           ropsten[contractKey].abi,
           ropsten[contractKey].addr
@@ -310,8 +309,16 @@
           });
           return;
         }
+
+        if(!isFinite(parseFloat(this.insure))) {
+          this.$alert('请输入正确的投保金额', '提示', {
+            confirmButtonText: '确定'
+          });
+          return;
+        }
+        
         this.btnLoad = true;
-        let insureAmount = this.$util.toFixedStr(this.insure * 1e18);
+        let insureAmount = this.$util.toFixedStr(parseFloat(this.insure) * 1e18);
         insureAmount = new this.web3.utils.BN(String(insureAmount))
         // insureAmount = BigNumber.from(String(insureAmount));
         
