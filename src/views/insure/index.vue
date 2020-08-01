@@ -358,9 +358,9 @@
         } else {
           //other
           let checkRes;
-
+            
           try {
-            checkRes = await ct.methods.allowance(this.account, contract.addr).call({ from: this.account });
+            checkRes = await ct.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
           } catch (err) {
             console.error(err);
             return;
@@ -368,7 +368,7 @@
 
           if (checkRes != 0) {
             //approve
-            ct.methods.approve(contract.addr, 0).send({ from: this.account })
+            ct.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
               .on("transactionHash", hash => {
                 this.btnLoad = false;
                 this.insureRatio = 5;
@@ -379,7 +379,7 @@
               })
               .on('receipt', async receipt => {
                 ct.methods
-                  .approve(contract.addr, insureAmount)
+                  .approve(contract[this.currentVersion].addr, insureAmount)
                   .send({ from: this.account })
                   .on('receipt', async receipt => {
                     try {
@@ -418,7 +418,7 @@
               });
           } else {
             ct.methods
-              .approve(contract.addr, insureAmount)
+              .approve(contract[this.currentVersion].addr, insureAmount)
               .send({ from: this.account })
               .on("transactionHash", hash => {
                 this.showInsure = false;
@@ -582,7 +582,7 @@
             this.userDST = (res / 1e18).toFixed(4);
           }
         });
-
+        console.log(this.myContract.methods)
         //Insure Amount
         this.moneyFromRule = await this.myContract.methods
           .getInsuranceTotalMoneyForuser(this.account)
