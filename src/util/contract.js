@@ -1,6 +1,6 @@
 export default {
   v4: {
-    addr: '0x374d256d6a0F8cB7b93b7dbE02ACd0EcCfF83666',
+    addr: '0x885313d4f6babeefae68a264eccafb220db819b0',
     abi:[
       {
               "inputs": [
