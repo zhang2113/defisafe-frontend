@@ -82,7 +82,7 @@
 
               <div class="cash-btn-group">
                 <el-button @click="showClearModal">{{$t('insure.business.clearBtn')}}</el-button>
-                <el-button type="primary" @click="showInsureModal">{{$t('insure.business.insureBtn')}}</el-button>
+                <!-- <el-button type="primary" @click="showInsureModal">{{$t('insure.business.insureBtn')}}</el-button> -->
               </div>
             </div>
           </div>
@@ -277,7 +277,7 @@
         let hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
 
         let netType = window.ethereum.networkVersion;
-        if ((netType != 3) || !hasInstallWallet || !window.ethereum.selectedAddress) {
+        if ((netType != 1) || !hasInstallWallet || !window.ethereum.selectedAddress) {
           this.$router.push('/login');
           return;
         }
