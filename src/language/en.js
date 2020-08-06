@@ -32,7 +32,7 @@ module.exports = {
   insure: {
     business: {
       insureTitle: 'Total mortgage amount (DAI) | Total insurance account(DAI) | Total number of applications',
-      insureTitle2: 'Compensation(DAI) | Release DST',
+      insureTitle2: 'Compensation(DAI) | Release DSE',
       useInsureTitle: "my profile",
       useInsureDesc: 'my insurance | Pool amount | DSE',
       insureBtn: 'Insure',
@@ -55,7 +55,7 @@ module.exports = {
     login: {
       title: 'Tip',
       btn: "confirm",
-      desc: 'Please be sure to install the Metamask wallet and use the Ropsten network'
+      desc: 'Please be sure to install the Metamask wallet and use the main network'
     },
     insure: {
       start: {

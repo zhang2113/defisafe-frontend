@@ -74,15 +74,15 @@
                 <div class="label">{{$tc('insure.business.useInsureDesc', 2)}}</div>
                 <div class="number">{{userDSE}}</div>
               </div>
-              <div class="cash-item clear">
+              <!-- <div class="cash-item clear">
                 <img class="icon" src="../../imgs/dst-icon.png" alt="">
                 <div class="label">DST</div>
                 <div class="number">{{userDST}}</div>
-              </div>
+              </div> -->
 
               <div class="cash-btn-group">
                 <el-button @click="showClearModal">{{$t('insure.business.clearBtn')}}</el-button>
-                <!-- <el-button type="primary" @click="showInsureModal">{{$t('insure.business.insureBtn')}}</el-button> -->
+                <el-button type="primary" @click="showInsureModal">{{$t('insure.business.insureBtn')}}</el-button>
               </div>
             </div>
           </div>
@@ -198,6 +198,7 @@
   import { ropsten } from "@/util/tokenContract";
   import { main } from "@/util/tokenContract";
   import { moneyType, netIds } from "@/util/type";
+  import { MINE_CONTRACT } from '../../constants';
   export default {
     data() {
       return {
@@ -268,7 +269,7 @@
           return new Web3(window.web3.currentProvider);
         } else {
           return new Web3(
-            new Web3.providers.HttpProvider("https://ropsten.infura.io/v3/0xdbc877878b6653307c98c6e9006aef29ae8cac06")
+            new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/fe4e6b50dc8944efad81cfed627f465c")
           )
         }
       },
@@ -549,26 +550,6 @@
           ropsten.dse.addr
         );
 
-        //dst
-        let dstContract = new this.web3.eth.Contract(
-          ropsten.dst.abi,
-          ropsten.dst.addr
-        );
-
-        //main net
-        let mainWeb3 = new Web3(
-          new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/fe4e6b50dc8944efad81cfed627f465c")
-        )
-
-        let mainConstact = new mainWeb3.eth.Contract(
-          main.knc.abi,
-          main.knc.addr
-        );
-
-        mainConstact.methods.balanceOf(this.account).call().then(res => {
-
-        });
-
         desContract.methods.balanceOf(this.account).call().then(res => {
 
           if (res > 0) {
@@ -576,21 +557,18 @@
           }
         });
 
-        dstContract.methods.balanceOf(this.account).call().then(res => {
-
-          if (res > 0) {
-            this.userDST = (res / 1e18).toFixed(4);
-          }
-        });
-        console.log(this.myContract.methods)
         //Insure Amount
         this.moneyFromRule = await this.myContract.methods
           .getInsuranceTotalMoneyForuser(this.account)
           .call();
         this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
 
-        this.displayDES = await this.myContract.methods
-          .getTotalFreeTokens()
+        let mineContract = new this.web3.eth.Contract(
+          MINE_CONTRACT.abi,
+          MINE_CONTRACT.addr
+        );
+        this.displayDES = await mineContract.methods
+          .getTotalTokensOfMine()
           .call();
         this.displayDES = (this.displayDES / 1e18).toFixed(4);
 
