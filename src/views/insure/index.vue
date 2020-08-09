@@ -455,11 +455,11 @@
                         })
                         .on('receipt', async receipt => {
                           ct.methods
-                            .approve(contract[this.currentVersion].addr, insureAmount)
+                            .approve(contract[this.currentVersion].addr, approveBigNum)
                             .send({ from: this.account })
                             .on('receipt', async receipt => {
                               try {
-                                let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account, value: approveBigNum });
+                                let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
                                 window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                                 this.isLoad = false;
                                 this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
@@ -493,7 +493,7 @@
                         });
                     } else {
                       ct.methods
-                        .approve(contract[this.currentVersion].addr, insureAmount)
+                        .approve(contract[this.currentVersion].addr, approveBigNum)
                         .send({ from: this.account })
                         .on("transactionHash", hash => {
                           this.showInsure = false;
@@ -506,7 +506,7 @@
                         .on('receipt', async receipt => {
 
                           try {
-                            await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
+                            await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
                             this.isLoad = false;
                             window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                             this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
@@ -564,11 +564,11 @@
                     })
                     .on('receipt', async receipt => {
                       ct.methods
-                        .approve(contract[this.currentVersion].addr, insureAmount)
+                        .approve(contract[this.currentVersion].addr, approveBigNum)
                         .send({ from: this.account })
                         .on('receipt', async receipt => {
                           try {
-                            let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account, value: approveBigNum });
+                            let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
                             window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                             this.isLoad = false;
                             this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
@@ -602,7 +602,7 @@
                     });
                 } else {
                   ct.methods
-                    .approve(contract[this.currentVersion].addr, insureAmount)
+                    .approve(contract[this.currentVersion].addr, approveBigNum)
                     .send({ from: this.account })
                     .on("transactionHash", hash => {
                       this.showInsure = false;
@@ -615,7 +615,7 @@
                     .on('receipt', async receipt => {
 
                       try {
-                        await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account, value: approveBigNum });
+                        await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
                         this.isLoad = false;
                         window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                         this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
