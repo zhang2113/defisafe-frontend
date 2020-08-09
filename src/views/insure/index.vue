@@ -359,7 +359,7 @@
               })
               .on('receipt', async receipt => {
                 this.daiContract.methods
-                  .approve(contract[this.currentVersion].addr, approveBigNum)
+                  .approve(contract[this.currentVersion].addr, insureAmount)
                   .send({ from: this.account })
                   .on('receipt', async receipt => {
                     try {
@@ -397,7 +397,7 @@
               });
           } else {
             this.daiContract.methods
-              .approve(contract[this.currentVersion].addr, approveBigNum)
+              .approve(contract[this.currentVersion].addr, insureAmount)
               .send({ from: this.account })
               .on('receipt', async receipt => {
                 try {
