@@ -258,10 +258,13 @@
     },
     methods: {
       async changeInsure(val) {
+        let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = new this.web3.eth.Contract(
           PRICE_PREDICT.abi,
           PRICE_PREDICT.addr
         );
+        let insureAmount = this.$util.toFixedStr(parseFloat(this.insure) * 1e18);
+        insureAmount = new this.web3.utils.BN(String(insureAmount));
         let deposit = this.insure;
         let ratio = await this.myContract.methods.getMortgageRatio().call();
 
@@ -276,8 +279,8 @@
             this.depositTotal = deposit * res / 1e18;
           });
         } else {
-          ct.methods.getPriceTokenToToken('0xaD6D458402F60fD3Bd25163575031ACDce07538D', ).call().then(res => {
-            this.depositTotal = deposit * res / 1e18;
+          ct.methods.getPriceTokenToToken('0xaD6D458402F60fD3Bd25163575031ACDce07538D', ropsten[contractKey].addr, insureAmount).call().then(res => {
+            this.depositTotal = deposit * res['0'] / 1e18;
           });
         }
       },
@@ -343,11 +346,10 @@
         let insureAmount = this.$util.toFixedStr(parseFloat(this.insure) * 1e18);
         let approveBigNum = new this.web3.utils.BN(String(this.$util.toFixedStr(parseFloat(this.depositTotal) * 1e18)))
         insureAmount = new this.web3.utils.BN(String(insureAmount))
-
+        let daiAllow = await this.daiContract.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
+        console.log('daiAllow', daiAllow);
         if (this.mtype == 1) {
           //eth
-          let daiAllow = await this.daiContract.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
-          console.log('daiAllow', daiAllow);
           if (daiAllow != 0) {
             this.daiContract.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
               .on("transactionHash", hash => {
@@ -425,48 +427,107 @@
               });
           }
         } else {
-          //other
-          let checkRes;
-
-          try {
-            checkRes = await ct.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
-          } catch (err) {
-            console.error(err);
-            return;
-          }
-
-          if (checkRes != 0) {
-            //approve
-            ct.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
+          if (daiAllow != 0) {
+            this.daiContract.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
               .on("transactionHash", hash => {
                 this.btnLoad = false;
-                this.insureRatio = 5;
                 this.insure = 0;
                 this.showInsure = false;
                 this.isLoad = true;
                 sessionStorage.setItem('txHash', 1);
               })
               .on('receipt', async receipt => {
-                ct.methods
+                this.daiContract.methods
                   .approve(contract[this.currentVersion].addr, insureAmount)
                   .send({ from: this.account })
                   .on('receipt', async receipt => {
-                    try {
-                      let res = await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
-                      window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
-                      this.isLoad = false;
-                      this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
-                        confirmButtonText: 'ok'
-                      });
-                      sessionStorage.removeItem('txHash');
-                      this.getData();
-                    } catch (error) {
-                      sessionStorage.removeItem('txHash');
-                      console.log(error);
-                      this.isLoad = false;
-                      // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
-                      //   confirmButtonText: '确定'
-                      // });
+                    let checkRes = await ct.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
+                    if (checkRes != 0) {
+                      //approve
+                      ct.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
+                        .on("transactionHash", hash => {
+                          this.btnLoad = false;
+                          this.insureRatio = 5;
+                          this.insure = 0;
+                          this.showInsure = false;
+                          this.isLoad = true;
+                          sessionStorage.setItem('txHash', 1);
+                        })
+                        .on('receipt', async receipt => {
+                          ct.methods
+                            .approve(contract[this.currentVersion].addr, insureAmount)
+                            .send({ from: this.account })
+                            .on('receipt', async receipt => {
+                              try {
+                                let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account, value: approveBigNum });
+                                window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
+                                this.isLoad = false;
+                                this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                                  confirmButtonText: 'ok'
+                                });
+                                sessionStorage.removeItem('txHash');
+                                this.getData();
+                              } catch (error) {
+                                sessionStorage.removeItem('txHash');
+                                console.log(error);
+                                this.isLoad = false;
+                                // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+                                //   confirmButtonText: '确定'
+                                // });
+                              }
+                            })
+                            .on('error', error => {
+                              this.isLoad = false;
+                              sessionStorage.removeItem('txHash');
+                              console.error(error);
+                            });
+                        })
+                        .on('error', error => {
+                          this.isLoad = false;
+                          this.btnLoad = false;
+                          this.insure = 0;
+                          this.insureRatio = 5;
+                          this.showInsure = false;
+                          sessionStorage.removeItem('txHash');
+                          console.log(error);
+                        });
+                    } else {
+                      ct.methods
+                        .approve(contract[this.currentVersion].addr, insureAmount)
+                        .send({ from: this.account })
+                        .on("transactionHash", hash => {
+                          this.showInsure = false;
+                          this.insureRatio = 5;
+                          this.insure = 0;
+                          this.isLoad = true;
+                          this.btnLoad = false;
+                          sessionStorage.setItem('txHash', 1);
+                        })
+                        .on('receipt', async receipt => {
+
+                          try {
+                            await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
+                            this.isLoad = false;
+                            window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
+                            this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                              confirmButtonText: 'ok'
+                            });
+                            sessionStorage.removeItem('txHash');
+                            this.getData();
+                          } catch (error) {
+                            this.isLoad = false;
+                            sessionStorage.removeItem('txHash');
+                            console.log(error);
+                          }
+                        })
+                        .on('error', error => {
+                          sessionStorage.removeItem('txHash');
+                          this.btnLoad = false;
+                          this.insure = 0;
+                          this.insureRatio = 5;
+                          this.showInsure = false;
+                          this.isLoad = false;
+                        });
                     }
                   })
                   .on('error', error => {
@@ -485,43 +546,108 @@
                 console.log(error);
               });
           } else {
-            ct.methods
+            this.daiContract.methods
               .approve(contract[this.currentVersion].addr, insureAmount)
               .send({ from: this.account })
-              .on("transactionHash", hash => {
-                this.showInsure = false;
-                this.insureRatio = 5;
-                this.insure = 0;
-                this.isLoad = true;
-                this.btnLoad = false;
-                sessionStorage.setItem('txHash', 1);
-              })
               .on('receipt', async receipt => {
+                let checkRes = await ct.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
+                if (checkRes != 0) {
+                  //approve
+                  ct.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
+                    .on("transactionHash", hash => {
+                      this.btnLoad = false;
+                      this.insureRatio = 5;
+                      this.insure = 0;
+                      this.showInsure = false;
+                      this.isLoad = true;
+                      sessionStorage.setItem('txHash', 1);
+                    })
+                    .on('receipt', async receipt => {
+                      ct.methods
+                        .approve(contract[this.currentVersion].addr, insureAmount)
+                        .send({ from: this.account })
+                        .on('receipt', async receipt => {
+                          try {
+                            let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account, value: approveBigNum });
+                            window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
+                            this.isLoad = false;
+                            this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                              confirmButtonText: 'ok'
+                            });
+                            sessionStorage.removeItem('txHash');
+                            this.getData();
+                          } catch (error) {
+                            sessionStorage.removeItem('txHash');
+                            console.log(error);
+                            this.isLoad = false;
+                            // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+                            //   confirmButtonText: '确定'
+                            // });
+                          }
+                        })
+                        .on('error', error => {
+                          this.isLoad = false;
+                          sessionStorage.removeItem('txHash');
+                          console.error(error);
+                        });
+                    })
+                    .on('error', error => {
+                      this.isLoad = false;
+                      this.btnLoad = false;
+                      this.insure = 0;
+                      this.insureRatio = 5;
+                      this.showInsure = false;
+                      sessionStorage.removeItem('txHash');
+                      console.log(error);
+                    });
+                } else {
+                  ct.methods
+                    .approve(contract[this.currentVersion].addr, insureAmount)
+                    .send({ from: this.account })
+                    .on("transactionHash", hash => {
+                      this.showInsure = false;
+                      this.insureRatio = 5;
+                      this.insure = 0;
+                      this.isLoad = true;
+                      this.btnLoad = false;
+                      sessionStorage.setItem('txHash', 1);
+                    })
+                    .on('receipt', async receipt => {
 
-                try {
-                  await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
-                  this.isLoad = false;
-                  window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
-                  this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
-                    confirmButtonText: 'ok'
-                  });
-                  sessionStorage.removeItem('txHash');
-                  this.getData();
-                } catch (error) {
-                  this.isLoad = false;
-                  sessionStorage.removeItem('txHash');
-                  console.log(error);
+                      try {
+                        await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account, value: approveBigNum });
+                        this.isLoad = false;
+                        window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
+                        this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                          confirmButtonText: 'ok'
+                        });
+                        sessionStorage.removeItem('txHash');
+                        this.getData();
+                      } catch (error) {
+                        this.isLoad = false;
+                        sessionStorage.removeItem('txHash');
+                        console.log(error);
+                      }
+                    })
+                    .on('error', error => {
+                      sessionStorage.removeItem('txHash');
+                      this.btnLoad = false;
+                      this.insure = 0;
+                      this.insureRatio = 5;
+                      this.showInsure = false;
+                      this.isLoad = false;
+                    });
                 }
               })
               .on('error', error => {
-                sessionStorage.removeItem('txHash');
-                this.btnLoad = false;
-                this.insure = 0;
-                this.insureRatio = 5;
-                this.showInsure = false;
                 this.isLoad = false;
+                sessionStorage.removeItem('txHash');
+                console.error(error);
               });
           }
+          //other
+
+
         }
       },
       findKeyByValue(obj, val) {
