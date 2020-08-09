@@ -148,24 +148,30 @@
     <el-dialog :title="$t('modal.insure.start.title')" :visible.sync="showInsure" width="30%">
       <div class="dai_modal">
         <div>
-          <span>{{$t('modal.insure.start.token')}}：</span>
+          <span>保险资产：</span>
           <el-select @change='changeToken' style="width: 220px" v-model="mtype" placeholder="">
             <el-option v-for="(value, name) in mtypes" :key="name" :label="name" :value="value">
             </el-option>
           </el-select>
+          <span style="margin-left: 10px">{{currentToken}}</span>
         </div>
-        <div>{{currentToken}}</div>
+        <div>
+          <span>抵押资产：</span>
+          <span>{{depositTotal}}</span>
+        </div>
         <div>
           <span>{{$t('modal.insure.start.amount')}}：</span>
-          <el-input style="width: 220px" v-model="insure" placeholder=""></el-input>
+          <el-input @change='changeInsure' style="width: 220px" v-model="insure" placeholder=""></el-input>
+          <span>DAI</span>
+          <span style="margin-left: 10px">{{daiAmount}}DAI</span>
         </div>
-        <div>
+        <!-- <div>
           <span>{{$t('modal.insure.start.ratio')}}：</span>
           <el-input max='90' class="ratio-input" min='5' style="width: 220px; margin-right: 10px;" type='number' v-model="insureRatio"
             placeholder="">
           </el-input>
           <span>%</span>
-        </div>
+        </div> -->
         <div>
           <el-button :loading="btnLoad" @click="insureModalSave" type="primary">{{$t('modal.insure.start.btn')}}</el-button>
         </div>
@@ -198,10 +204,11 @@
   import { ropsten } from "@/util/tokenContract";
   import { main } from "@/util/tokenContract";
   import { moneyType, netIds } from "@/util/type";
-  import { MINE_CONTRACT } from '../../constants';
+  import { MINE_CONTRACT, PRICE_PREDICT } from '../../constants';
   export default {
     data() {
       return {
+        daiAmount: 0,
         tokenIcon: tokenIcon,
         btnLoad: false,
         netType: '',
@@ -216,6 +223,7 @@
         money: 0,
         moneyFromRule: 0,
         totalMoneyFromRule: 0,
+        depositTotal: 0,
         cashMoneyFromRule: 0,
         versionArr: [],
         myContract: null,
@@ -259,6 +267,30 @@
       this.getData();
     },
     methods: {
+      async changeInsure(val) {
+        let ct = new this.web3.eth.Contract(
+          PRICE_PREDICT.abi,
+          PRICE_PREDICT.addr
+        );
+        let deposit = this.insure;
+        let ratio = await this.myContract.methods.getMortgageRatio().call();
+        
+
+        if(ratio > 0) {
+          deposit = this.insure * ratio;
+        }
+
+        if(this.mtype == 1) {
+          ct.methods.getPriceTokenToEth('0xaD6D458402F60fD3Bd25163575031ACDce07538D').call().then(res => {
+            console.log(res)
+            this.depositTotal = deposit * res / 1e18;
+          });
+        } else {
+          ct.methods.getPriceTokenToToken('0xaD6D458402F60fD3Bd25163575031ACDce07538D', ).call().then(res => {
+            this.depositTotal = deposit * res / 1e18;
+          });
+        }
+      },
       goLowVersion(version) {
         this.currentVersion = version;
         sessionStorage.setItem('version', version);
@@ -278,7 +310,7 @@
         let hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
 
         let netType = window.ethereum.networkVersion;
-        if ((netType != 1) || !hasInstallWallet || !window.ethereum.selectedAddress) {
+        if ((netType != 3) || !hasInstallWallet || !window.ethereum.selectedAddress) {
           this.$router.push('/login');
           return;
         }
@@ -296,7 +328,10 @@
         this.showInsure = true;
       },
       async insureModalSave() {
-        
+        let daiContract = new this.web3.eth.Contract(
+          ropsten.eth.abi,
+          '0xaD6D458402F60fD3Bd25163575031ACDce07538D'
+        );
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
 
         let ct = new this.web3.eth.Contract(
@@ -304,7 +339,7 @@
           ropsten[contractKey].addr
         );
 
-        if (this.currentToken < parseFloat(this.insure)) {
+        if (this.currentToken < parseFloat(this.depositTotal)) {
           this.$alert(this.$tc('modal.insure.tip.desc', 0), this.$tc('modal.insure.tip.title', 0), {
             confirmButtonText: this.$t('modal.insure.tip.btn')
           });
@@ -325,37 +360,118 @@
         
         if (this.mtype == 1) {
           //eth
-          this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
-            .on("transactionHash", hash => {
-              this.isLoad = true;
-              this.btnLoad = false;
-              this.insure = 0;
-              this.insureRatio = 5;
-              this.showInsure = false;
-              sessionStorage.setItem('txHash', 1);
-              window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
-            })
-            .on('receipt', async receipt => {
-              console.log('receipt', receipt)
-              this.isLoad = false;
-              sessionStorage.removeItem('txHash');
-              this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
-                confirmButtonText: 'ok'
+          let daiAllow = await daiContract.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
+          console.log('daiAllow', daiAllow);
+          if(daiAllow != 0) {
+            daiContract.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
+              .on("transactionHash", hash => {
+                this.btnLoad = false;
+                this.insure = 0;
+                this.showInsure = false;
+                this.isLoad = true;
+                sessionStorage.setItem('txHash', 1);
+              })
+              .on('receipt', async receipt => {
+                daiContract.methods
+                  .approve(contract[this.currentVersion].addr, insureAmount)
+                  .send({ from: this.account })
+                  .on('receipt', async receipt => {
+                    try {
+                      let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
+                      console.log(1111, res)
+                      window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
+                      this.isLoad = false;
+                      this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                        confirmButtonText: 'ok'
+                      });
+                      sessionStorage.removeItem('txHash');
+                      this.getData();
+                    } catch (error) {
+                      sessionStorage.removeItem('txHash');
+                      console.log(error);
+                      this.isLoad = false;
+                      // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+                      //   confirmButtonText: '确定'
+                      // });
+                    }
+                  })
+                  .on('error', error => {
+                    this.isLoad = false;
+                    sessionStorage.removeItem('txHash');
+                    console.error(error);
+                  });
+              })
+              .on('error', error => {
+                this.isLoad = false;
+                this.btnLoad = false;
+                this.insure = 0;
+                this.insureRatio = 5;
+                this.showInsure = false;
+                sessionStorage.removeItem('txHash');
+                console.log(error);
               });
-              this.getData();
-            })
-            .on('error', error => {
-              this.isLoad = false;
-              this.btnLoad = false;
-              this.insure = 0;
-              this.insureRatio = 5;
-              this.showInsure = false;
-              sessionStorage.removeItem('txHash');
-              console.log(error);
-              // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
-              //   confirmButtonText: '确定'
-              // });
-            });
+          } else {
+            daiContract.methods
+                  .approve(contract[this.currentVersion].addr, insureAmount)
+                  .send({ from: this.account })
+                  .on('receipt', async receipt => {
+                    try {
+                      let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
+                      console.log(1111, res)
+                      window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
+                      this.isLoad = false;
+                      this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                        confirmButtonText: 'ok'
+                      });
+                      sessionStorage.removeItem('txHash');
+                      this.getData();
+                    } catch (error) {
+                      sessionStorage.removeItem('txHash');
+                      console.log(error);
+                      this.isLoad = false;
+                      // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+                      //   confirmButtonText: '确定'
+                      // });
+                    }
+                  })
+                  .on('error', error => {
+                    this.isLoad = false;
+                    sessionStorage.removeItem('txHash');
+                    console.error(error);
+                  });
+          }
+          
+          // this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
+          //   .on("transactionHash", hash => {
+          //     this.isLoad = true;
+          //     this.btnLoad = false;
+          //     this.insure = 0;
+          //     this.insureRatio = 5;
+          //     this.showInsure = false;
+          //     sessionStorage.setItem('txHash', 1);
+          //     window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
+          //   })
+          //   .on('receipt', async receipt => {
+          //     console.log('receipt', receipt)
+          //     this.isLoad = false;
+          //     sessionStorage.removeItem('txHash');
+          //     this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+          //       confirmButtonText: 'ok'
+          //     });
+          //     this.getData();
+          //   })
+          //   .on('error', error => {
+          //     this.isLoad = false;
+          //     this.btnLoad = false;
+          //     this.insure = 0;
+          //     this.insureRatio = 5;
+          //     this.showInsure = false;
+          //     sessionStorage.removeItem('txHash');
+          //     console.log(error);
+          //     // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+          //     //   confirmButtonText: '确定'
+          //     // });
+          //   });
         } else {
           //other
           let checkRes;
@@ -465,6 +581,15 @@
         }
       },
       getUserToken() {
+        let daiContract = new this.web3.eth.Contract(
+          ropsten.eth.abi,
+          '0xaD6D458402F60fD3Bd25163575031ACDce07538D'
+        );
+        daiContract.methods.balanceOf(this.account).call().then(res => {
+          console.log('dat', res)
+          this.daiAmount = (res / 1e18).toFixed(4);
+        });
+
         if (this.mtype == 1) {
           //eth
           this.web3.eth.getBalance(this.account).then(res => {
@@ -472,8 +597,6 @@
           });
           return;
         }
-
-
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = new this.web3.eth.Contract(
           ropsten[contractKey]['abi'],
@@ -526,12 +649,6 @@
         this.account = window.ethereum.selectedAddress;
         this.useInsureDesc = [];
         this.useInsureDesc = Object.keys(this.mtypes).map(e => { return { type: e, amount: 0 } });
-
-        // if (sessionStorage.txHash) {
-        //   // pending
-        //   this.isLoad = true;
-        // }
-
         if (!this.web3) {
           this.web3 = this.initWeb3();
         }
@@ -543,7 +660,7 @@
           );
         
 
-        //des
+        console.log(this.myContract)
 
         let desContract = new this.web3.eth.Contract(
           ropsten.dse.abi,
@@ -558,46 +675,47 @@
         });
 
         //Insure Amount
-        this.moneyFromRule = await this.myContract.methods
-          .getInsuranceTotalMoneyForuser(this.account)
-          .call();
-        this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
+        // this.moneyFromRule = await this.myContract.methods
+        //   .getInsuranceTotalMoneyForuser(this.account)
+        //   .call();
+        // this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
 
-        let mineContract = new this.web3.eth.Contract(
-          MINE_CONTRACT.abi,
-          MINE_CONTRACT.addr
-        );
-        this.displayDES = await mineContract.methods
-          .getTotalTokensOfMine()
-          .call();
-        this.displayDES = (this.displayDES / 1e18).toFixed(4);
-
-        this.offsetMoney = await this.myContract.methods.getTotalCompensation_ever().call();
-        this.offsetMoney = (this.offsetMoney / 1e18).toFixed(4);
-
+        // let mineContract = new this.web3.eth.Contract(
+        //   MINE_CONTRACT.abi,
+        //   MINE_CONTRACT.addr
+        // );
+        
+        // this.displayDES = await mineContract.methods
+        //   .getTotalTokensOfMine()
+        //   .call();
+        // this.displayDES = (this.displayDES / 1e18).toFixed(4);
+        
+        // this.offsetMoney = await this.myContract.methods.getTotalCompensation_ever().call();
+        // this.offsetMoney = (this.offsetMoney / 1e18).toFixed(4);
+        
         //Capital Pool
-        this.totalMoneyFromRule = await this.myContract.methods
-          .getInsurancePoolBalanceOf()
-          .call();
-        this.totalMoneyFromRule = (this.totalMoneyFromRule / 1e18).toFixed(4);
-
+        // this.totalMoneyFromRule = await this.myContract.methods
+        //   .getInsurancePoolBalanceOf()
+        //   .call();
+        // this.totalMoneyFromRule = (this.totalMoneyFromRule / 1e18).toFixed(4);
+        
         //Case Pledge
-        this.cashMoneyFromRule = await this.myContract.methods
-          .getAssetsTotalForPlatform()
-          .call();
-        this.cashMoneyFromRule = (this.cashMoneyFromRule / 1e18).toFixed(4);
-
-        this.totalInsureAmount = await this.myContract.methods
-          .getInsuranceCountForPlatform_ever()
-          .call();
-
-        this.totalInsureMoney = await this.myContract.methods
-          .getAssetsTotalForPlatform_ever()
-          .call();
-        this.totalInsureMoney = (this.totalInsureMoney / 1e18).toFixed(4);
-
+        // this.cashMoneyFromRule = await this.myContract.methods
+        //   .getAssetsTotalForPlatform()
+        //   .call();
+        // this.cashMoneyFromRule = (this.cashMoneyFromRule / 1e18).toFixed(4);
+        
+        // this.totalInsureAmount = await this.myContract.methods
+        //   .getInsuranceCountForPlatform_ever()
+        //   .call();
+          
+        // this.totalInsureMoney = await this.myContract.methods
+        //   .getAssetsTotalForPlatform_ever()
+        //   .call();
+        // this.totalInsureMoney = (this.totalInsureMoney / 1e18).toFixed(4);
+  
         //Get details of my assets
-        this.getMyInsureDetail();
+        // this.getMyInsureDetail();
       },
       getMyInsureDetail(index = 0) {
 

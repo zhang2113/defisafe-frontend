@@ -1,6 +1,6 @@
 export default {
   v1: {
-    addr: '0x374d256d6a0F8cB7b93b7dbE02ACd0EcCfF83666',
+    addr: '0x64804d1DDbd8aBAe833fbD733390631B94f90b9c',
     abi: [
       {
         "inputs": [
@@ -30,16 +30,6 @@ export default {
           {
             "internalType": "uint256",
             "name": "_amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "_tokenAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_insuranceRatio",
             "type": "uint256"
           }
         ],
@@ -75,6 +65,19 @@ export default {
         "type": "function"
       },
       {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_daiAddr",
+            "type": "address"
+          }
+        ],
+        "name": "setDaiAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "stateMutability": "nonpayable",
         "type": "constructor"
@@ -96,14 +99,8 @@ export default {
           },
           {
             "indexed": false,
-            "internalType": "address",
-            "name": "tokenAddress",
-            "type": "address"
-          },
-          {
-            "indexed": false,
             "internalType": "uint256",
-            "name": "insuranceRatio",
+            "name": "mortgageTokens",
             "type": "uint256"
           }
         ],
@@ -141,19 +138,6 @@ export default {
         ],
         "name": "RechargeInsurancePool",
         "type": "event"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_daiAddr",
-            "type": "address"
-          }
-        ],
-        "name": "setDaiAddress",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
       },
       {
         "anonymous": false,
@@ -216,12 +200,38 @@ export default {
       {
         "inputs": [
           {
+            "internalType": "uint256",
+            "name": "_mapAssetRatio",
+            "type": "uint256"
+          }
+        ],
+        "name": "setMapAssetRatio",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "address",
             "name": "_addr",
             "type": "address"
           }
         ],
         "name": "setMineManager",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_mortgageRatio",
+            "type": "uint256"
+          }
+        ],
+        "name": "setMortgageRatio",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -280,24 +290,6 @@ export default {
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_name",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_tokenType",
-            "type": "uint256"
-          }
-        ],
-        "name": "withdrawAssets",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
         "anonymous": false,
         "inputs": [
           {
@@ -319,6 +311,24 @@ export default {
       {
         "stateMutability": "payable",
         "type": "fallback"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_name",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_tokenType",
+            "type": "uint256"
+          }
+        ],
+        "name": "withdrawAssets",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
       {
         "stateMutability": "payable",
@@ -462,6 +472,32 @@ export default {
       },
       {
         "inputs": [],
+        "name": "getMapAssetRatio",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "getMortgageRatio",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "getPlatformCost",
         "outputs": [
           {
@@ -510,6 +546,25 @@ export default {
       {
         "inputs": [
           {
+            "internalType": "uint256",
+            "name": "_tokenType",
+            "type": "uint256"
+          }
+        ],
+        "name": "getTokenPoolMortgageBalanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "address",
             "name": "_name",
             "type": "address"
@@ -532,8 +587,19 @@ export default {
         "type": "function"
       },
       {
-        "inputs": [],
-        "name": "getTotalCompensation_ever",
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_name",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_tokenType",
+            "type": "uint256"
+          }
+        ],
+        "name": "getTokenPoolUserMortgageBalanceOf",
         "outputs": [
           {
             "internalType": "uint256",
@@ -546,7 +612,7 @@ export default {
       },
       {
         "inputs": [],
-        "name": "getTotalFreeTokens",
+        "name": "getTotalCompensation_ever",
         "outputs": [
           {
             "internalType": "uint256",
