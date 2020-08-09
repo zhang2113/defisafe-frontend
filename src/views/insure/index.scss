@@ -10,68 +10,6 @@
     width: 900px;
     margin: 0 auto;
   }
-  .head {
-    padding: 20px 0;
-    img {
-      width: 30px;
-      vertical-align: bottom;
-    }
-    .text {
-      color: #2E9EFF;
-      margin-left: 10px;
-      vertical-align: bottom;
-    }
-    .head-left {
-      cursor: pointer;
-    }
-    .head-right {
-      color: #fff;
-      .account, .net-type, .version {
-        display: inline-block;
-        vertical-align: top;
-        height: 36px;
-        line-height: 36px;
-        font-size: 16px;
-        // cursor: pointer;
-        // &:hover {
-        //   background: #7869C3;
-        //   transition: background .15s linear;
-        // }
-      }
-      .net-type, .version {
-        margin-right: 15px;
-        background: #C7E7FF;
-        color: #2587FF;
-        border-radius: 8px;
-        padding: 0 12px;
-      }
-      .version {
-        background: #eee;
-        color: #333;
-        cursor: pointer;
-        &.active {
-          color: #2587FF;
-          background: #C7E7FF;
-          cursor: default;
-        }
-      }
-      .account {
-        color: #333333;
-        padding: 4px;
-        border-radius:18px;
-        background: #E3ECF5;
-        >div {
-          display: inline-block;
-          vertical-align: top;
-          line-height: 28px;
-          box-shadow:0px 2px 4px 0px rgba(10,0,109,0.4);
-          background: #fff;
-          border-radius: 14px;
-          padding: 0 12px;
-        }
-      }
-    }
-  }
   .nav {
     margin-top: 40px;
     >div {

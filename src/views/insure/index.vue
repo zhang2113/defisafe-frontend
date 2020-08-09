@@ -2,26 +2,9 @@
   <div v-loading="isLoad" :element-loading-text="$t('insure.load.text')" element-loading-background="rgba(0, 0, 0, 0.8)" class="insure">
     <img width="100%" class="bg-img" src="../../imgs/bg.png" alt="bg">
     <div class="container">
-      <!-- head -->
-      <div class="head clear">
-        <div @click='$router.push("/")' class="fl head-left">
-          <img class="logo" src="../../imgs/logo.png" alt="">
-          <span class="text">DefiSafe</span>
-        </div>
-        <div class="fr head-right">
-          <div class="version" @click='goLowVersion(item)' :class='{active: item == currentVersion}' v-for='item in versionArr' :key='item'>{{item}}</div>
-          <div class="net-type" v-if='netType == "Ropsten"'>
-            {{netType + ' ' + $t('insure.net')}}
-          </div>
-          <div class="account">
-            <div>
-              {{viewAccount}}
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- head end -->
+      <Header :version='versionArr'></Header>
 
+      <!-- <ConstractData></ConstractData> -->
       <!-- nav -->
       <div class="nav clear">
         <div class="fl">
@@ -198,6 +181,8 @@
 </template>
 
 <script>
+  import Header from '../../components/Header';
+  import ConstractData from '../../components/ConstractData';
   import Web3 from "web3";
   import tokenIcon from '@/imgs/token';
   import contract from "@/util/contract";
@@ -241,6 +226,10 @@
         offsetMoney: 0,
         displayDES: 0
       };
+    },
+    components: {
+      Header,
+      ConstractData
     },
     computed: {
       viewAccount() {
@@ -352,6 +341,7 @@
 
         this.btnLoad = true;
         let insureAmount = this.$util.toFixedStr(parseFloat(this.insure) * 1e18);
+        let approveBigNum = new this.web3.utils.BN(String(this.$util.toFixedStr(parseFloat(this.depositTotal) * 1e18)))
         insureAmount = new this.web3.utils.BN(String(insureAmount))
 
         if (this.mtype == 1) {
@@ -369,11 +359,11 @@
               })
               .on('receipt', async receipt => {
                 this.daiContract.methods
-                  .approve(contract[this.currentVersion].addr, insureAmount)
+                  .approve(contract[this.currentVersion].addr, approveBigNum)
                   .send({ from: this.account })
                   .on('receipt', async receipt => {
                     try {
-                      let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
+                      let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account, value: approveBigNum });
                       window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                       this.isLoad = false;
                       this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
@@ -407,11 +397,11 @@
               });
           } else {
             this.daiContract.methods
-              .approve(contract[this.currentVersion].addr, insureAmount)
+              .approve(contract[this.currentVersion].addr, approveBigNum)
               .send({ from: this.account })
               .on('receipt', async receipt => {
                 try {
-                  let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
+                  let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account, value: approveBigNum });
                   window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                   this.isLoad = false;
                   this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
