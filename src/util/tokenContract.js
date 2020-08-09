@@ -1,6 +1,6 @@
 export const ropsten = {
     dse: {
-        addr: '0x2a0d283b509e6eef294233031763ba5086373378',
+        addr: '0xc7a420a07878a7c8763ef5b5377016fdf2856438',
         abi: [
             {
                 "inputs": [

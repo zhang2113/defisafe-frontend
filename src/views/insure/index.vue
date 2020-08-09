@@ -204,10 +204,11 @@
   import { ropsten } from "@/util/tokenContract";
   import { main } from "@/util/tokenContract";
   import { moneyType, netIds } from "@/util/type";
-  import { MINE_CONTRACT, PRICE_PREDICT } from '../../constants';
+  import { MINE_CONTRACT, PRICE_PREDICT, ERC_ABI, DAI_CONTRACT } from '../../constants';
   export default {
     data() {
       return {
+        daiContract: null,
         daiAmount: 0,
         tokenIcon: tokenIcon,
         btnLoad: false,
@@ -254,12 +255,12 @@
     created() {
       let constractKeys = Object.keys(contract);
       this.versionArr = constractKeys;
-      if(sessionStorage.version) {
+      if (sessionStorage.version) {
         this.currentVersion = sessionStorage.version;
       } else {
         this.currentVersion = constractKeys[0];
       }
-      
+
       this.initApp();
     },
     mounted() {
@@ -274,13 +275,13 @@
         );
         let deposit = this.insure;
         let ratio = await this.myContract.methods.getMortgageRatio().call();
-        
 
-        if(ratio > 0) {
+
+        if (ratio > 0) {
           deposit = this.insure * ratio;
         }
 
-        if(this.mtype == 1) {
+        if (this.mtype == 1) {
           ct.methods.getPriceTokenToEth('0xaD6D458402F60fD3Bd25163575031ACDce07538D').call().then(res => {
             console.log(res)
             this.depositTotal = deposit * res / 1e18;
@@ -328,10 +329,6 @@
         this.showInsure = true;
       },
       async insureModalSave() {
-        let daiContract = new this.web3.eth.Contract(
-          ropsten.eth.abi,
-          '0xaD6D458402F60fD3Bd25163575031ACDce07538D'
-        );
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
 
         let ct = new this.web3.eth.Contract(
@@ -346,24 +343,23 @@
           return;
         }
 
-        if(!isFinite(parseFloat(this.insure))) {
+        if (!isFinite(parseFloat(this.insure))) {
           this.$alert('请输入正确的投保金额', '提示', {
             confirmButtonText: '确定'
           });
           return;
         }
-        
+
         this.btnLoad = true;
         let insureAmount = this.$util.toFixedStr(parseFloat(this.insure) * 1e18);
         insureAmount = new this.web3.utils.BN(String(insureAmount))
-        // insureAmount = BigNumber.from(String(insureAmount));
-        
+
         if (this.mtype == 1) {
           //eth
-          let daiAllow = await daiContract.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
+          let daiAllow = await this.daiContract.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
           console.log('daiAllow', daiAllow);
-          if(daiAllow != 0) {
-            daiContract.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
+          if (daiAllow != 0) {
+            this.daiContract.methods.approve(contract[this.currentVersion].addr, 0).send({ from: this.account })
               .on("transactionHash", hash => {
                 this.btnLoad = false;
                 this.insure = 0;
@@ -372,13 +368,12 @@
                 sessionStorage.setItem('txHash', 1);
               })
               .on('receipt', async receipt => {
-                daiContract.methods
+                this.daiContract.methods
                   .approve(contract[this.currentVersion].addr, insureAmount)
                   .send({ from: this.account })
                   .on('receipt', async receipt => {
                     try {
                       let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
-                      console.log(1111, res)
                       window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                       this.isLoad = false;
                       this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
@@ -411,71 +406,38 @@
                 console.log(error);
               });
           } else {
-            daiContract.methods
-                  .approve(contract[this.currentVersion].addr, insureAmount)
-                  .send({ from: this.account })
-                  .on('receipt', async receipt => {
-                    try {
-                      let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
-                      console.log(1111, res)
-                      window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
-                      this.isLoad = false;
-                      this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
-                        confirmButtonText: 'ok'
-                      });
-                      sessionStorage.removeItem('txHash');
-                      this.getData();
-                    } catch (error) {
-                      sessionStorage.removeItem('txHash');
-                      console.log(error);
-                      this.isLoad = false;
-                      // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
-                      //   confirmButtonText: '确定'
-                      // });
-                    }
-                  })
-                  .on('error', error => {
-                    this.isLoad = false;
-                    sessionStorage.removeItem('txHash');
-                    console.error(error);
+            this.daiContract.methods
+              .approve(contract[this.currentVersion].addr, insureAmount)
+              .send({ from: this.account })
+              .on('receipt', async receipt => {
+                try {
+                  let res = await this.myContract.methods.deposit(this.mtype, insureAmount).send({ from: this.account });
+                  window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
+                  this.isLoad = false;
+                  this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
+                    confirmButtonText: 'ok'
                   });
+                  sessionStorage.removeItem('txHash');
+                  this.getData();
+                } catch (error) {
+                  sessionStorage.removeItem('txHash');
+                  console.log(error);
+                  this.isLoad = false;
+                  // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
+                  //   confirmButtonText: '确定'
+                  // });
+                }
+              })
+              .on('error', error => {
+                this.isLoad = false;
+                sessionStorage.removeItem('txHash');
+                console.error(error);
+              });
           }
-          
-          // this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account, value: insureAmount })
-          //   .on("transactionHash", hash => {
-          //     this.isLoad = true;
-          //     this.btnLoad = false;
-          //     this.insure = 0;
-          //     this.insureRatio = 5;
-          //     this.showInsure = false;
-          //     sessionStorage.setItem('txHash', 1);
-          //     window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
-          //   })
-          //   .on('receipt', async receipt => {
-          //     console.log('receipt', receipt)
-          //     this.isLoad = false;
-          //     sessionStorage.removeItem('txHash');
-          //     this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
-          //       confirmButtonText: 'ok'
-          //     });
-          //     this.getData();
-          //   })
-          //   .on('error', error => {
-          //     this.isLoad = false;
-          //     this.btnLoad = false;
-          //     this.insure = 0;
-          //     this.insureRatio = 5;
-          //     this.showInsure = false;
-          //     sessionStorage.removeItem('txHash');
-          //     console.log(error);
-          //     // this.$alert('合约执行错误，请反馈项目方排查', '提示', {
-          //     //   confirmButtonText: '确定'
-          //     // });
-          //   });
         } else {
           //other
           let checkRes;
-            
+
           try {
             checkRes = await ct.methods.allowance(this.account, contract[this.currentVersion].addr).call({ from: this.account });
           } catch (err) {
@@ -501,7 +463,6 @@
                   .on('receipt', async receipt => {
                     try {
                       let res = await this.myContract.methods.deposit(this.mtype, insureAmount, ropsten[contractKey].addr, this.insureRatio).send({ from: this.account });
-                      console.log(1111, res)
                       window._czc.push(['_trackEvent', '点击事件', '用户投保', this.account]);
                       this.isLoad = false;
                       this.$alert(this.$tc('modal.insure.tip.desc', 2), this.$tc('modal.insure.tip.title', 2), {
@@ -644,7 +605,7 @@
       },
       //get page data
       async getData() {
-        window._czc.push(['_trackEvent', '加载', '投保页面打开次数']);    
+        window._czc.push(['_trackEvent', '加载', '投保页面打开次数']);
         this.netType = netIds[window.ethereum.networkVersion];
         this.account = window.ethereum.selectedAddress;
         this.useInsureDesc = [];
@@ -653,14 +614,18 @@
           this.web3 = this.initWeb3();
         }
         //Web3 Contract Object
-        
-          this.myContract = new this.web3.eth.Contract(
-            contract[this.currentVersion].abi,
-            contract[this.currentVersion].addr
-          );
-        
 
-        console.log(this.myContract)
+        this.myContract = new this.web3.eth.Contract(
+          contract[this.currentVersion].abi,
+          contract[this.currentVersion].addr
+        );
+
+        this.daiContract = new this.web3.eth.Contract(
+          ERC_ABI,
+          DAI_CONTRACT.addr
+        );
+
+
 
         let desContract = new this.web3.eth.Contract(
           ropsten.dse.abi,
@@ -675,47 +640,47 @@
         });
 
         //Insure Amount
-        // this.moneyFromRule = await this.myContract.methods
-        //   .getInsuranceTotalMoneyForuser(this.account)
-        //   .call();
-        // this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
+        this.moneyFromRule = await this.myContract.methods
+          .getInsuranceTotalMoneyForuser(this.account)
+          .call();
+        this.moneyFromRule = (this.moneyFromRule / 1e18).toFixed(4);
 
-        // let mineContract = new this.web3.eth.Contract(
-        //   MINE_CONTRACT.abi,
-        //   MINE_CONTRACT.addr
-        // );
-        
-        // this.displayDES = await mineContract.methods
-        //   .getTotalTokensOfMine()
-        //   .call();
-        // this.displayDES = (this.displayDES / 1e18).toFixed(4);
-        
-        // this.offsetMoney = await this.myContract.methods.getTotalCompensation_ever().call();
-        // this.offsetMoney = (this.offsetMoney / 1e18).toFixed(4);
-        
+        let mineContract = new this.web3.eth.Contract(
+          MINE_CONTRACT.abi,
+          MINE_CONTRACT.addr
+        );
+
+        this.displayDES = await mineContract.methods
+          .getTotalTokensOfMine()
+          .call();
+        this.displayDES = (this.displayDES / 1e18).toFixed(4);
+
+        this.offsetMoney = await this.myContract.methods.getTotalCompensation_ever().call();
+        this.offsetMoney = (this.offsetMoney / 1e18).toFixed(4);
+
         //Capital Pool
-        // this.totalMoneyFromRule = await this.myContract.methods
-        //   .getInsurancePoolBalanceOf()
-        //   .call();
-        // this.totalMoneyFromRule = (this.totalMoneyFromRule / 1e18).toFixed(4);
-        
+        this.totalMoneyFromRule = await this.myContract.methods
+          .getInsurancePoolBalanceOf()
+          .call();
+        this.totalMoneyFromRule = (this.totalMoneyFromRule / 1e18).toFixed(4);
+
         //Case Pledge
-        // this.cashMoneyFromRule = await this.myContract.methods
-        //   .getAssetsTotalForPlatform()
-        //   .call();
-        // this.cashMoneyFromRule = (this.cashMoneyFromRule / 1e18).toFixed(4);
-        
-        // this.totalInsureAmount = await this.myContract.methods
-        //   .getInsuranceCountForPlatform_ever()
-        //   .call();
-          
-        // this.totalInsureMoney = await this.myContract.methods
-        //   .getAssetsTotalForPlatform_ever()
-        //   .call();
-        // this.totalInsureMoney = (this.totalInsureMoney / 1e18).toFixed(4);
-  
+        this.cashMoneyFromRule = await this.myContract.methods
+          .getAssetsTotalForPlatform()
+          .call();
+        this.cashMoneyFromRule = (this.cashMoneyFromRule / 1e18).toFixed(4);
+
+        this.totalInsureAmount = await this.myContract.methods
+          .getInsuranceCountForPlatform_ever()
+          .call();
+
+        this.totalInsureMoney = await this.myContract.methods
+          .getAssetsTotalForPlatform_ever()
+          .call();
+        this.totalInsureMoney = (this.totalInsureMoney / 1e18).toFixed(4);
+
         //Get details of my assets
-        // this.getMyInsureDetail();
+        this.getMyInsureDetail();
       },
       getMyInsureDetail(index = 0) {
 
