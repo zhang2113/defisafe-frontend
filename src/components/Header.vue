@@ -23,15 +23,15 @@ import { NET_IDS } from '../constants'
   export default {
     data () {
       return {
-        currentVersion: ''
+        currentVersion: '',
+        account: '',
+        networkVersion: ''
       }
     },
     props: {
       version: {
         type: Array,
-        default: [],
-        networkVersion: '',
-        account: ''
+        default: []
       }
     },
     async created () {
@@ -48,8 +48,8 @@ import { NET_IDS } from '../constants'
         return NET_IDS[this.networkVersion]
       },
       viewAccount() {
-        if (this.account) {
-          this.account = this.account.slice(0, 6) + "..." + this.account.slice(-5, -1);
+        if (this.account[0]) {
+          this.account = this.account[0].slice(0, 6) + "..." + this.account[0].slice(-5, -1);
           return this.account;
         } else {
           return '';

@@ -173,14 +173,15 @@
       //init necessary data
       async initApp() {
         let hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
+        let useAccount = await window.ethereum.request({ method: 'eth_accounts' });
+        this.account = useAccount[0];
 
         let netType = window.ethereum.networkVersion;
-        if ((netType != 3) || !hasInstallWallet || !window.ethereum.selectedAddress) {
+        if ((netType != 3) || !hasInstallWallet || !this.account) {
           this.$router.push('/login');
           return;
         }
 
-        this.account = window.ethereum.selectedAddress;
         this.daiContract = this.$util.getContract(this.web3Obj, DAI_CONTRACT.addr, ERC_ABI);
         this.myContract = this.$util.getContract(this.web3Obj, DEFISAFE_CONSTRACT.v1.addr, DEFISAFE_CONSTRACT.v1.abi);
 
@@ -202,7 +203,7 @@
       async insureModalSave() {
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = this.$util.getContract(this.web3Obj, ROPSTEN_TOKEN_ADDR[contractKey].addr, ERC_ABI);
-        console.log(ROPSTEN_TOKEN_ADDR[contractKey].addr)
+        console.log('ctaddr', ROPSTEN_TOKEN_ADDR[contractKey].addr)
         if (this.insure <= 10) {
           this.$alert('投保金额不能低于10DAI', '提示', {
             confirmButtonText: '确定'
@@ -228,6 +229,9 @@
         let insureAmount = this.transferToBn(this.insure);
         let approveBigNum = this.transferToBn(this.depositTotal);
         let daiAllow = await this.daiContract.methods.allowance(this.account, DEFISAFE_CONSTRACT[this.currentVersion].addr).call({ from: this.account });
+        console.log('daiAllow', daiAllow);
+        console.log('insureAmount', insureAmount)
+        console.log('approveBigNum', approveBigNum)
         if (this.mtype == 1) {
           //eth
           this.insureEth(daiAllow, insureAmount, approveBigNum);
@@ -241,6 +245,8 @@
         }
       },
       insureEth(daiAllow, insureAmount, approveBigNum) {
+        console.log('addr', DEFISAFE_CONSTRACT[this.currentVersion].addr)
+        console.log('account', this.account)
         if (daiAllow != 0) {
           this.daiContract.methods.approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, 0).send({ from: this.account })
             .on("transactionHash", this.txCallback)
