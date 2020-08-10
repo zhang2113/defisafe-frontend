@@ -23,6 +23,12 @@ const util = {
       }
     }
     return x;
+  },
+  getContract(web3, addr, abi) {
+    return new web3.eth.Contract(
+      abi,
+      addr
+    );
   }
 }
 

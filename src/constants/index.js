@@ -1353,3 +1353,15 @@ export const ERC_ABI = [
     "type": "event"
   }
 ]
+
+export const SUPPORT_TOKEN_TYPE = {
+  wbtc: 0,
+  eth: 1,
+  knc: 2,
+  link: 3,
+  omg: 4,
+  bat: 5,
+  mana: 6,
+  zrx: 7,
+  snx: 8
+}

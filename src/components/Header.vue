@@ -54,8 +54,10 @@ import { NET_IDS } from '../constants'
       }
     },
     methods: {
-      goLowVersion() {
-
+      goLowVersion(version) {
+        this.currentVersion = version;
+        sessionStorage.setItem('version', version);
+        this.getData();
       }
     }
   }

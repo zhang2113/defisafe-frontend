@@ -1,0 +1,123 @@
+<template>
+    <div>
+        <div class="cash-item clear">
+            <img class="icon" src="../imgs/icon02.png" alt />
+            <div class="label">{{ $tc('insure.business.useInsureDesc', 0)}}</div>
+            <div class="number">{{ moneyFromRule }} DAI</div>
+        </div>
+        <div class="cash-item clear">
+            <img class="icon" src="../imgs/icon01.png" alt />
+            <div class="label">{{ $tc('insure.business.useInsureDesc', 1)}}</div>
+            <div class="number">{{ totalMoneyFromRule }} DAI</div>
+        </div>
+        <div class="cash-item clear">
+            <img class="icon" src="../imgs/logo.png" alt />
+            <div class="label">{{ $tc('insure.business.useInsureDesc', 2)}}</div>
+            <div class="number">{{ userDSE }}</div>
+        </div>
+        <!-- <div class="cash-item clear">
+                <img class="icon" src="../../imgs/dst-icon.png" alt="">
+                <div class="label">DST</div>
+                <div class="number">{{userDST}}</div>
+              </div> -->
+    </div>
+</template>
+
+<script>
+    import { DEFISAFE_CONSTRACT, ERC_ABI } from "../constants";
+    import ROPSTEN_TOKEN_ADDR from "../constants/token";
+    import tokenIcon from "@/imgs/token";
+    export default {
+        data() {
+            return {
+                userDSE: 0,
+                totalMoneyFromRule: 0,
+                moneyFromRule: 0,
+                account: ""
+            };
+        },
+        inject: ["web3Obj"],
+        created() {
+            this.account = window.ethereum.selectedAddress;
+            this.getData();
+        },
+        methods: {
+            getData() {
+                let contract = this.$util.getContract(
+                    this.web3Obj,
+                    DEFISAFE_CONSTRACT.v1.addr,
+                    DEFISAFE_CONSTRACT.v1.abi
+                );
+                let dseContract = this.$util.getContract(
+                    this.web3Obj,
+                    ROPSTEN_TOKEN_ADDR.dse.addr,
+                    ERC_ABI
+                );
+
+                dseContract.methods
+                    .balanceOf(this.account)
+                    .call()
+                    .then((res) => {
+                        if (res > 0) {
+                            this.userDSE = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
+                        }
+                    });
+
+                contract.methods
+                    .getInsurancePoolBalanceOf()
+                    .call()
+                    .then((res) => {
+                        this.totalMoneyFromRule = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
+                    });
+
+                    contract.methods.getInsuranceTotalMoneyForuser(this.account).call().then(res => {
+                        this.moneyFromRule = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
+                    });
+            },
+            getContractDataCall(contract, methodsArr, index = 0) {
+                if (index > methodsArr.length - 1) {
+                    return;
+                }
+
+                let tokenId = SUPPORT_TOKEN_TYPE[methodsArr[index]];
+
+                contract.methods
+                    .getTokenPoolUserBalanceOf(this.account, tokenId)
+                    .call()
+                    .then((res) => {
+                        let result = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
+                        if (result > 0) {
+                            this.useInsureDesc[index].amount = result;
+                        }
+                        this.getContractDataCall(contract, methodsArr, ++index);
+                    });
+            },
+        },
+    };
+</script>
+
+<style lang='scss' scoped>
+    .cash-item {
+        padding: 10px 0;
+        font-size: 16px;
+
+        >* {
+            float: left;
+            height: 36px;
+            line-height: 36px;
+        }
+
+        .number {
+            float: right;
+            color: #1aa2e5;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .icon {
+            width: 36px;
+            height: 36px;
+            margin-right: 15px;
+        }
+    }
+</style>

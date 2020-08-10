@@ -1,4 +1,4 @@
-export const ROPSTEN_TOKEN_ADDR = {
+export default {
   dse: {
       addr: '0xc7a420a07878a7c8763ef5b5377016fdf2856438'
   },

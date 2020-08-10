@@ -10,23 +10,6 @@
     width: 900px;
     margin: 0 auto;
   }
-  .nav {
-    margin-top: 40px;
-    >div {
-      width: 33.333%;
-    }
-    .title {
-      font-size: 15px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 10px;
-    }
-    .amount {
-      font-size: 32px;
-      font-weight: bold;
-      color: #1AA2E5;
-    }
-  }
   .content {
     margin-top: 36px;
     padding: 25px 0;
@@ -39,31 +22,12 @@
         font-weight: bold;
       }
       .cash-insure {
+        margin-bottom: 20px;
         .cash-list {
           border-radius: 6px;
           padding: 15px;
           background: #fff;
           box-shadow:0px 1px 24px 0px rgba(176,192,237,0.42);
-          .cash-item {
-            padding: 10px 0;
-            font-size: 16px;
-            >* {
-              float: left;
-              height: 36px;
-              line-height: 36px;
-            }
-            .number {
-              float: right;
-              color: #1AA2E5;
-              font-size: 16px;
-              font-weight: bold;
-            }
-            .icon {
-              width: 36px;
-              height: 36px;
-              margin-right: 15px;
-            }
-          }
           /deep/.cash-btn-group {
             text-align: center;
             margin-top: 10px;
@@ -76,44 +40,6 @@
             }
           }
         }
-      }
-      .account-type {
-        margin-top: 30px;
-       .account-list {
-         background: #fff;
-         padding: 15px;
-         border-radius: 6px;
-         box-shadow:0px 1px 24px 0px rgba(176,192,237,0.42);
-         .a-head {
-           font-size: 14px;
-           line-height: 50px;
-         }
-         .a-item {
-           border-bottom: 1px solid #D6D9E0;
-           height: 50px;
-           &:last-child {
-             border-color: transparent;
-           }
-           .left-name {
-             padding: 9px 0;
-             >* {
-               vertical-align: middle;
-             }
-             img {
-               width: 32px;
-               height: 32px;
-               margin-right: 15px;
-             }
-             .w {
-               color: #ADB5C7;
-             }
-           }
-           .amount {
-             line-height: 50px;
-             text-align: right;
-           }
-         }
-       }
       }
     }
    
