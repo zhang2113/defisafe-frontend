@@ -67,7 +67,7 @@
           <span style="margin-left: 10px">{{daiAmount}}DAI</span>
         </div>
         <div>
-          <el-button :loading="btnLoad" @click="insureModalSave" type="primary">{{$t('modal.insure.start.btn')}}
+          <el-button :disabled='btnDisable' :loading="btnLoad" @click="insureModalSave" type="primary">{{$t('modal.insure.start.btn')}}
           </el-button>
         </div>
       </div>
@@ -143,6 +143,15 @@
     mounted() {
       this.getData();
     },
+    computed: {
+      btnDisable() {
+        if(this.depositTotal) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    },
     methods: {
       transferToBn(val) {
         let value = this.web3Obj.utils.toWei(String(val));
@@ -150,6 +159,7 @@
       },
       //calc price
       async changeInsure(val) {
+        
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = this.$util.getContract(this.web3Obj, PRICE_PREDICT.addr, PRICE_PREDICT.abi);
         let insureAmount = this.transferToBn(this.insure);
@@ -163,10 +173,12 @@
         if (this.mtype == 1) {
           ct.methods.getPriceTokenToEth(DAI_CONTRACT.addr).call().then(res => {
             this.depositTotal = deposit * this.transferFromWei(res);
+            
           });
         } else {
           ct.methods.getPriceTokenToToken(DAI_CONTRACT.addr, ROPSTEN_TOKEN_ADDR[contractKey].addr, insureAmount).call().then(res => {
             this.depositTotal = deposit * this.transferFromWei(res['0']);
+            
           });
         }
       },
@@ -198,30 +210,45 @@
           this.daiAmount = this.transferFromWei(res);
         });
         this.getUserToken();
+        this.depositTotal = 0;
+        this.insure = 0;
         this.showInsure = true;
       },
-      async insureModalSave() {
-        let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
-        let ct = this.$util.getContract(this.web3Obj, ROPSTEN_TOKEN_ADDR[contractKey].addr, ERC_ABI);
-        console.log('ctaddr', ROPSTEN_TOKEN_ADDR[contractKey].addr)
+      checkForm() {
         if (this.insure <= 10) {
           this.$alert('投保金额不能低于10DAI', '提示', {
             confirmButtonText: '确定'
           });
-          return;
+          return false;
         }
 
         if (this.currentToken < parseFloat(this.depositTotal)) {
           this.$alert('没有足够的抵押金', '提示', {
             confirmButtonText: '确定'
           });
-          return;
+          return false;
         }
 
         if (!isFinite(parseFloat(this.insure))) {
           this.$alert('请输入正确的投保金额', '提示', {
             confirmButtonText: '确定'
           });
+          return false;
+        }
+
+        if (this.insure > this.daiAmount) {
+          this.$alert('DAI余额不足，请前往uniswap兑换', '提示', {
+            confirmButtonText: '确定'
+          });
+          return false;
+        }
+
+        return true;
+      },
+      async insureModalSave() {
+        let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
+        let ct = this.$util.getContract(this.web3Obj, ROPSTEN_TOKEN_ADDR[contractKey].addr, ERC_ABI);
+        if(!this.checkForm()) {
           return;
         }
 
@@ -229,9 +256,7 @@
         let insureAmount = this.transferToBn(this.insure);
         let approveBigNum = this.transferToBn(this.depositTotal);
         let daiAllow = await this.daiContract.methods.allowance(this.account, DEFISAFE_CONSTRACT[this.currentVersion].addr).call({ from: this.account });
-        console.log('daiAllow', daiAllow);
-        console.log('insureAmount', insureAmount)
-        console.log('approveBigNum', approveBigNum)
+
         if (this.mtype == 1) {
           //eth
           this.insureEth(daiAllow, insureAmount, approveBigNum);
@@ -245,8 +270,6 @@
         }
       },
       insureEth(daiAllow, insureAmount, approveBigNum) {
-        console.log('addr', DEFISAFE_CONSTRACT[this.currentVersion].addr)
-        console.log('account', this.account)
         if (daiAllow != 0) {
           this.daiContract.methods.approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, 0).send({ from: this.account })
             .on("transactionHash", this.txCallback)
