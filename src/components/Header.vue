@@ -29,10 +29,14 @@ import { NET_IDS } from '../constants'
     props: {
       version: {
         type: Array,
-        default: []
+        default: [],
+        networkVersion: '',
+        account: ''
       }
     },
-    created () {
+    async created () {
+      this.networkVersion = await window.ethereum.request({ method: 'net_version' });
+      this.account = await window.ethereum.request({ method: 'eth_accounts' });
       if (sessionStorage.version) {
         this.currentVersion = sessionStorage.version;
       } else {
@@ -41,13 +45,12 @@ import { NET_IDS } from '../constants'
     },
     computed: {
       netType() {
-        return NET_IDS[window.ethereum.networkVersion]
+        return NET_IDS[this.networkVersion]
       },
       viewAccount() {
-        let account = window.ethereum.selectedAddress;
-        if (account) {
-          account = account.slice(0, 6) + "..." + account.slice(-5, -1);
-          return account;
+        if (this.account) {
+          this.account = this.account.slice(0, 6) + "..." + this.account.slice(-5, -1);
+          return this.account;
         } else {
           return '';
         }

@@ -34,8 +34,8 @@
             }
         },
         inject: ['web3Obj'],
-        created() {
-            this.account = window.ethereum.selectedAddress;
+        async created() {
+            this.account = await ethereum.request({ method: 'eth_accounts' });
             this.getData();
         },
         methods: {
@@ -53,7 +53,7 @@
 
                 let tokenId = SUPPORT_TOKEN_TYPE[methodsArr[index]];
 
-                contract.methods.getTokenPoolUserBalanceOf(this.account, tokenId).call().then(res => {
+                contract.methods.getTokenPoolUserBalanceOf(this.account[0], tokenId).call().then(res => {
                     let result = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
                     if(result > 0) {
                         this.useInsureDesc[index].amount = result;  

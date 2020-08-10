@@ -202,7 +202,7 @@
       async insureModalSave() {
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = this.$util.getContract(this.web3Obj, ROPSTEN_TOKEN_ADDR[contractKey].addr, ERC_ABI);
-
+        console.log(ROPSTEN_TOKEN_ADDR[contractKey].addr)
         if (this.insure <= 10) {
           this.$alert('投保金额不能低于10DAI', '提示', {
             confirmButtonText: '确定'
@@ -264,7 +264,6 @@
                 })
                 .on('error', error => {
                   this.isLoad = false;
-                  sessionStorage.removeItem('txHash');
                   console.error(error);
                 });
             })
