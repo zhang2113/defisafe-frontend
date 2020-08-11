@@ -64,11 +64,70 @@
       }
     }
   }
-  .dai_modal {
+  
+  /deep/.i-modal {
+    .im-head {
+      font-size: 20px;
+      color: #333;
+    }
+    .el-dialog__body {
+      padding-top: 10px;
+    }
+    .im-item {
+      border-top: 1px solid rgb(247, 248, 250);
+      padding: 12px 0;
+      .im-top-amount {
+        margin-bottom: 10px;
+        padding-right: 10px;
+        font-size: 14px;
+        color: #666;
+        font-weight: 600;
+      }
+      .im-label {
+        font-size: 18px;
+        color: #333;
+      }
+      .token-icon {
+        position: absolute;
+        width: 24px;
+        top: 8px;
+        left: 10px;
+        height: 24px;
+        z-index: 9;
+      }
+      .im-insure-input {
+        border: none;
+        outline: none;
+        font-weight: 500;
+        font-size: 24px;
+        appearance: textfield;
+        width: 0;
+      }
+      .im-dai-label {
+        font-size: 22px;
+      }
+      /deep/.im-select {
+        width: 150px;
+        .el-input__inner {
+          border: none;
+          font-size: 22px;
+          font-weight: 500;
+          padding-left: 40px;
+          &:hover {
+            background-color: rgb(247, 248, 250);
+          }
+        }
+      } 
+      .im-deposit-amount {
+        font-size: 22px;
+        font-weight: 600;
+        margin-right: 10px;
+      }
+    }
     >div {
       margin-bottom: 15px;
     }
-    button {
+    .save-btn {
       text-align: center;
       width: 100%;
       background: #1aa2e5;

@@ -3,6 +3,7 @@ html, body {
     padding: 0;
     height: 100%;
     overflow: hidden;
+    -webkit-font-smoothing: antialiased;
     width: 100%;
 }
 
@@ -50,7 +51,36 @@ button {
     text-align: center;
 }
 
+.tr {
+    text-align: right;
+}
+
+.pr {
+    position: relative;
+}
+
 .il_middle {
   display: inline-block;
   vertical-align: middle;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-m {
+    display: flex;
+    align-items: center;
+}
+
+.flex-r {
+  justify-content: flex-end;
+}
+
+.flex-c {
+  justify-content: center;
 }
