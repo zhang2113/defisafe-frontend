@@ -183,6 +183,15 @@ export default {
   mounted() {
     this.getData();
   },
+  computed: {
+      btnDisable() {
+        if(this.depositTotal) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    },
   methods: {
     transferToBn(val) {
       let value = this.web3Obj.utils.toWei(String(val));
@@ -228,16 +237,13 @@ export default {
     async initApp() {
       let hasInstallWallet =
         typeof window.ethereum === "undefined" ? false : true;
-
+      let useAccount = await window.ethereum.request({ method: 'eth_accounts' });
+      this.account = useAccount[0];
       let netType = window.ethereum.networkVersion;
-      if (
-        netType != 3 ||
-        !hasInstallWallet ||
-        !window.ethereum.selectedAddress
-      ) {
-        this.$router.push("/login");
-        return;
-      }
+      if ((netType != 3) || !hasInstallWallet || !this.account) {
+          this.$router.push('/login');
+          return;
+        }
 
       this.account = window.ethereum.selectedAddress;
       this.daiContract = this.$util.getContract(
@@ -267,8 +273,41 @@ export default {
           this.daiAmount = this.transferFromWei(res);
         });
       this.getUserToken();
+      this.depositTotal = 0;
+      this.insure = 0;
       this.showInsure = true;
     },
+    checkForm() {
+        if (this.insure <= 10) {
+          this.$alert('投保金额不能低于10DAI', '提示', {
+            confirmButtonText: '确定'
+          });
+          return false;
+        }
+
+        if (this.currentToken < parseFloat(this.depositTotal)) {
+          this.$alert('没有足够的抵押金', '提示', {
+            confirmButtonText: '确定'
+          });
+          return false;
+        }
+
+        if (!isFinite(parseFloat(this.insure))) {
+          this.$alert('请输入正确的投保金额', '提示', {
+            confirmButtonText: '确定'
+          });
+          return false;
+        }
+
+        if (this.insure > this.daiAmount) {
+          this.$alert('DAI余额不足，请前往uniswap兑换', '提示', {
+            confirmButtonText: '确定'
+          });
+          return false;
+        }
+
+        return true;
+      },
     async insureModalSave() {
       let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
       let ct = this.$util.getContract(
@@ -277,27 +316,9 @@ export default {
         ERC_ABI
       );
 
-      if (this.insure <= 10) {
-        this.$alert("投保金额不能低于10DAI", "提示", {
-          confirmButtonText: "确定",
-        });
-        return;
+      if(!this.checkForm()) {
+          return;
       }
-
-      if (this.currentToken < parseFloat(this.depositTotal)) {
-        this.$alert("没有足够的抵押金", "提示", {
-          confirmButtonText: "确定",
-        });
-        return;
-      }
-
-      if (!isFinite(parseFloat(this.insure))) {
-        this.$alert("请输入正确的投保金额", "提示", {
-          confirmButtonText: "确定",
-        });
-        return;
-      }
-
       this.btnLoad = true;
       let insureAmount = this.transferToBn(this.insure);
       let approveBigNum = this.transferToBn(this.depositTotal);

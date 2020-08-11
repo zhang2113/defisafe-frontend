@@ -23,7 +23,9 @@ import { NET_IDS } from '../constants'
   export default {
     data () {
       return {
-        currentVersion: ''
+        currentVersion: '',
+        account: '',
+        networkVersion: ''
       }
     },
     props: {
@@ -32,7 +34,9 @@ import { NET_IDS } from '../constants'
         default: []
       }
     },
-    created () {
+    async created () {
+      this.networkVersion = await window.ethereum.request({ method: 'net_version' });
+      this.account = await window.ethereum.request({ method: 'eth_accounts' });
       if (sessionStorage.version) {
         this.currentVersion = sessionStorage.version;
       } else {
@@ -41,13 +45,12 @@ import { NET_IDS } from '../constants'
     },
     computed: {
       netType() {
-        return NET_IDS[window.ethereum.networkVersion]
+        return NET_IDS[this.networkVersion]
       },
       viewAccount() {
-        let account = window.ethereum.selectedAddress;
-        if (account) {
-          account = account.slice(0, 6) + "..." + account.slice(-5, -1);
-          return account;
+        if (this.account[0]) {
+          this.account = this.account[0].slice(0, 6) + "..." + this.account[0].slice(-5, -1);
+          return this.account;
         } else {
           return '';
         }

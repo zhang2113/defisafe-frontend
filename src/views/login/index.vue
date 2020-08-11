@@ -29,11 +29,11 @@
         this.hasInstallWallet = typeof window.ethereum === "undefined" ? false : true;
 
         if (this.hasInstallWallet) {
-          let isLogin = window.ethereum.selectedAddress;
-          let netType = window.ethereum.networkVersion;
+          let isLogin = await ethereum.request({ method: 'eth_accounts' });
+          let netType = await ethereum.request({ method: 'net_version' });
 
           // Determine the current network type
-          if ((netType == 3) && isLogin) {
+          if ((netType == 3) && isLogin[0]) {
             this.$router.replace('/insure');
           }
         }

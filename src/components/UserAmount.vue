@@ -37,8 +37,8 @@
             };
         },
         inject: ["web3Obj"],
-        created() {
-            this.account = window.ethereum.selectedAddress;
+        async created() {
+            this.account = await window.ethereum.request({ method: 'eth_accounts' });
             this.getData();
         },
         methods: {
@@ -48,21 +48,21 @@
                     DEFISAFE_CONSTRACT.v1.addr,
                     DEFISAFE_CONSTRACT.v1.abi
                 );
+                
                 let dseContract = this.$util.getContract(
                     this.web3Obj,
                     ROPSTEN_TOKEN_ADDR.dse.addr,
                     ERC_ABI
                 );
-
                 dseContract.methods
-                    .balanceOf(this.account)
+                    .balanceOf(this.account[0])
                     .call()
                     .then((res) => {
                         if (res > 0) {
                             this.userDSE = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
                         }
                     });
-
+                    
                 contract.methods
                     .getInsurancePoolBalanceOf()
                     .call()
@@ -70,7 +70,7 @@
                         this.totalMoneyFromRule = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
                     });
 
-                    contract.methods.getInsuranceTotalMoneyForuser(this.account).call().then(res => {
+                    contract.methods.getInsuranceTotalMoneyForuser(this.account[0]).call().then(res => {
                         this.moneyFromRule = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
                     });
             },
@@ -82,7 +82,7 @@
                 let tokenId = SUPPORT_TOKEN_TYPE[methodsArr[index]];
 
                 contract.methods
-                    .getTokenPoolUserBalanceOf(this.account, tokenId)
+                    .getTokenPoolUserBalanceOf(this.account[0], tokenId)
                     .call()
                     .then((res) => {
                         let result = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
