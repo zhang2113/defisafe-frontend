@@ -66,6 +66,9 @@
   }
   
   /deep/.i-modal {
+    .el-dialog {
+      border-radius: 20px;
+    }
     .im-head {
       font-size: 20px;
       color: #333;
@@ -96,18 +99,21 @@
         z-index: 9;
       }
       .im-insure-input {
+        margin-right: 10px;
+        color: #606266;
         border: none;
         outline: none;
         font-weight: 500;
-        font-size: 24px;
+        font-size: 22px;
         appearance: textfield;
         width: 0;
+        text-align: right;
       }
       .im-dai-label {
         font-size: 22px;
       }
       /deep/.im-select {
-        width: 150px;
+        width: 140px;
         .el-input__inner {
           border: none;
           font-size: 22px;
@@ -120,8 +126,19 @@
       } 
       .im-deposit-amount {
         font-size: 22px;
-        font-weight: 600;
         margin-right: 10px;
+      }
+    }
+    .im-ratio {
+      margin-bottom: 15px;
+      .im-ratio-item {
+        text-align: center;
+        color: #409EFF;
+        font-weight: 600;
+        padding: 8px 0;
+        &:first-child {
+          margin-right: 50px;
+        }
       }
     }
     >div {
@@ -130,10 +147,9 @@
     .save-btn {
       text-align: center;
       width: 100%;
-      // background: #1aa2e5;
-      // color: #FFF;
+      padding: 16px 0;
       font-size: 18px;
-      padding: 12px 0;
+      margin-top: 15px;
     }
     /deep/.ratio-input {
       .el-input__inner {
