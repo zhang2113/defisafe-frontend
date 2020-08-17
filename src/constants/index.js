@@ -1359,7 +1359,7 @@ export const SUPPORT_TOKEN_TYPE = {
   eth: 1,
   knc: 2,
   link: 3,
-  omg: 4,
+  // omg: 4,
   bat: 5,
   mana: 6,
   zrx: 7,

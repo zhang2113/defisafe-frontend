@@ -71,19 +71,20 @@
     }
     .im-head {
       font-size: 20px;
-      color: #333;
+      color: #143862;
+      font-weight: bold;
     }
     .el-dialog__body {
       padding-top: 10px;
     }
     .im-item {
       border-top: 1px solid rgb(247, 248, 250);
-      padding: 12px 0;
+      padding: 16px 0;
       .im-top-amount {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         padding-right: 10px;
         font-size: 14px;
-        color: #666;
+        color: #75859C;
         font-weight: 600;
       }
       .im-label {
@@ -97,6 +98,13 @@
         left: 10px;
         height: 24px;
         z-index: 9;
+        border-radius: 50%;
+        &.token-icon-block {
+          background: red;
+          width: 20px;
+          height: 20px;
+          top: 10px;
+        }
       }
       .im-insure-input {
         margin-right: 10px;
@@ -108,20 +116,35 @@
         appearance: textfield;
         width: 0;
         text-align: right;
+        &::-webkit-input-placeholder { 
+          color: #ADB4BE; 
+          font-size: 18px;
+        } 
       }
       .im-dai-label {
         font-size: 22px;
       }
       /deep/.im-select {
-        width: 140px;
+        width: 160px;
         .el-input__inner {
+          background: rgba(243,245,249,1);
           border: none;
           font-size: 22px;
           font-weight: 500;
           padding-left: 40px;
+          color: #17316B;
+          &::-webkit-input-placeholder { 
+            color: #17316B; 
+            font-size: 18px;
+          } 
           &:hover {
             background-color: rgb(247, 248, 250);
           }
+        }
+        .el-select__caret {
+          color: #17316B;
+          font-size: 18px;
+          font-weight: bold;
         }
       } 
       .im-deposit-amount {
@@ -149,7 +172,15 @@
       width: 100%;
       padding: 16px 0;
       font-size: 18px;
+      background:rgba(210,226,252,1);
+      border-color: rgba(210,226,252,1);
       margin-top: 15px;
+      color: #143862;
+      &.is-disabled {
+        color: #BBBBBB;
+        border-color: rgba(240,240,240,1);
+        background:rgba(240,240,240,1);
+      }
     }
     /deep/.ratio-input {
       .el-input__inner {

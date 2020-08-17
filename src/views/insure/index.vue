@@ -45,19 +45,29 @@
 
     <!-- modal -->
     <el-dialog :close-on-click-modal='false' class="i-modal" :title="$t('modal.insure.start.title')" :visible.sync="showInsure" width="420px">
-      <div class="im-head tc" slot="title">投保</div>
+      <div class="im-head" slot="title">投保</div>
       <div>
-        <div class="flex-m im-ratio">
-          <div class="flex-1 im-ratio-item">抵押比例：{{mortgageRatio}}</div>
-          <div class="flex-1 im-ratio-item">投保比例：{{mapAssetRatio}}</div>
+        <div class="im-item">
+          <div class="im-top-amount flex-m">
+            <span class="flex-1">{{$t('modal.insure.start.amount')}}：</span>
+            <span>Balance：{{daiAmount}}</span>
+          </div>
+          <div class="flex-m">
+            <span class="im-label"></span>
+            <input class="im-insure-input flex-1" @blur="changeInsure" v-model="insure" type="text" placeholder='投保金额>10.00'>
+            <span class="im-dai-label">dai</span>
+          </div>
         </div>
         <div class="im-item">
-          <div class="tr im-top-amount">Balance：{{currentToken}}</div>
+          <div class="im-top-amount flex-m">
+            <span class="flex-1">抵押资产：</span>
+            <span>Balance：{{currentToken}}</span>
+          </div>
           <div class='flex-m'>
-            <span class="im-label flex-1">保险资产：</span>
             <div class="pr">
-              <img class="token-icon" :src="tokenIcon[tokenTypeName]" alt="">
-              <el-select class="im-select" @change="changeToken" v-model="mtype" placeholder>
+              <span class="token-icon token-icon-block" v-if='!tokenTypeName'></span>
+              <img v-else class="token-icon" :src="tokenIcon[tokenTypeName]" alt="">
+              <el-select class="im-select" @change="changeToken" v-model="mtype" placeholder='选择通证'>
                 <el-option v-for="(value, name) in mtypes" :key="name" :label="name" :value="value">
                   <div class="im_select-option">
                     <img class="token-icon" :src="tokenIcon[name]" alt />
@@ -66,22 +76,16 @@
                 </el-option>
               </el-select>
             </div>
-
+            <div class="flex-1 tr im-dai-label">
+              {{viewDepositTotal}}
+            </div>
           </div>
         </div>
-        <div class="im-item flex-m">
-          <span class="im-label flex-1">抵押资产：</span>
-          <span class="im-deposit-amount">{{depositTotal}}</span>
-          <span class="im-dai-label">{{tokenTypeName}}</span>
+        <div class="flex-m im-ratio">
+          <div class="flex-1 im-ratio-item">抵押比例：{{mortgageRatio}}</div>
+          <div class="flex-1 im-ratio-item">投保比例：{{mapAssetRatio}}</div>
         </div>
-        <div class="im-item">
-          <div class="tr im-top-amount">Balance：{{daiAmount}}</div>
-          <div class="flex-m">
-            <span class="im-label">{{$t('modal.insure.start.amount')}}：</span>
-            <input class="im-insure-input flex-1" @blur="changeInsure" v-model="insure" type="text" placeholder='>10.00'>
-            <span class="im-dai-label">dai</span>
-          </div>
-        </div>
+        
         <div>
           <el-button class="save-btn" :disabled='btnDisable' :loading="btnLoad" @click="insureModalSave" type="primary">{{insureModalBtnText}}</el-button>
         </div>
@@ -135,8 +139,9 @@
         mapAssetRatio: 0,
         mtypes: SUPPORT_TOKEN_TYPE,
         currentVersion: "", //当前合约版本
-        mtype: 1, //通证,默认eth
-        tokenTypeName: 'eth',
+        mtype: '', //通证,默认eth
+        tokenTypeName: '',
+        isCalc: false,
         account: "",
         depositTotal: 0,
         versionArr: [],
@@ -169,8 +174,15 @@
       this.getData();
     },
     computed: {
+      viewDepositTotal() {
+        if(String(this.depositTotal).includes('e')) {
+          return parseFloat(String(this.depositTotal).split('e')[0]).toFixed(4);
+        } else {
+          return parseFloat(this.depositTotal).toFixed(4);
+        }
+      },
       btnDisable() {
-        if (this.depositTotal) {
+        if (this.depositTotal && !this.isCalc) {
           return false;
         } else {
           return true;
@@ -182,8 +194,9 @@
         let value = this.web3Obj.utils.toWei(String(val));
         return new this.web3Obj.utils.BN(value);
       },
-      //calc price
-      async changeInsure(val) {
+      calcPrice() {
+        if(this.mtype === '' || !this.insure) return;
+        this.isCalc = true;
         this.btnLoad = true;
         this.insureModalBtnText = '计算抵押金额';
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
@@ -194,12 +207,10 @@
         );
         let insureAmount = this.transferToBn(this.insure);
         let deposit = 0;
-
-
         if (this.mortgageRatio > 0) {
           deposit = this.insure * this.mortgageRatio;
         }
-
+        
         if (this.mtype == 1) {
           ct.methods
             .getPriceTokenToEth(DAI_CONTRACT.addr)
@@ -208,6 +219,7 @@
               this.depositTotal = deposit * this.transferFromWei(res);
               this.btnLoad = false;
               this.insureModalBtnText = '确定';
+              this.isCalc = false;
             });
         } else {
           ct.methods
@@ -221,8 +233,13 @@
               this.depositTotal = deposit * this.transferFromWei(res["0"]);
               this.btnLoad = false;
               this.insureModalBtnText = '确定';
+              this.isCalc = false;
             });
         }
+      },
+      //calc price
+      async changeInsure(val) {
+        this.calcPrice();
       },
       //init necessary data
       async initApp() {
@@ -263,6 +280,14 @@
           this.insureModalBtnText = '确定';
         }
         this.btnLoad = false;
+        this.depositTotal = 0;
+        this.currentToken = 0;
+        this.insure = '';
+        this.showInsure = true;
+        this.isCalc = false;
+        this.mtype = '';
+        this.tokenTypeName = '';
+
         this.daiContract.methods
           .balanceOf(this.account)
           .call()
@@ -276,10 +301,7 @@
         this.myContract.methods.getMapAssetRatio().call().then(res => {
           this.mapAssetRatio = res;
         });
-        this.getUserToken();
-        this.depositTotal = 0;
-        this.insure = '';
-        this.showInsure = true;
+        // this.getUserToken();
       },
       checkForm() {
         if (this.insure <= 10) {
@@ -303,7 +325,7 @@
           return false;
         }
 
-        if (this.insure > this.daiAmount) {
+        if (Number(this.insure) > Number(this.daiAmount)) {
           this.$alert('DAI余额不足，请前往uniswap兑换', '提示', {
             confirmButtonText: '确定'
           });
@@ -679,17 +701,23 @@
                 confirmButtonText: this.$t("modal.insure.tip.btn"),
               }
             );
-            this.getData();
+            this.updateData();
           })
           .on("error", this.txErrorCallback);
       },
       //get page data
       async getData() {
         window._czc.push(["_trackEvent", "加载", "投保页面打开次数"]);
+        setTimeout(() => {
+          console.log(this.myContract)
+        this.myContract.methods.getPlatformCost().call().then(res => {
+          console.log('-------------------1-------', res)
+        });
+        }, 1000)
+        
       },
       changeToken(val) {
-        this.insure = '';
-        this.depositTotal = 0;
+        this.calcPrice();
         this.tokenTypeName = this.findKeyByValue(this.mtypes, val);
         this.getUserToken();
       },
@@ -702,8 +730,12 @@
 </style>
 
 <style lang='scss'>
+  .el-select-dropdown__item {
+    height: 40px;
+    line-height: 40px;
+  }
   .im_select-option {
-    line-height: 34px;
+    line-height: 40px;
     .token-icon {
       width: 24px;
       height: 24px;
