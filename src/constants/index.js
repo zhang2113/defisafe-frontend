@@ -557,7 +557,7 @@ export const DAI_CONTRACT = {
 
 export const DEFISAFE_CONSTRACT = {
   v1: {
-    addr: '0x9ceCc2f8d948f61e4e2e6b4aEC290205BE22F825',
+    addr: '0xb2dcc8bee4d386a78e0f516cb079df82863ef0cb',
     abi: [
       {
         "inputs": [
