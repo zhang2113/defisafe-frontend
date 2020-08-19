@@ -25,7 +25,7 @@
 
 <script>
     import { DEFISAFE_CONSTRACT, ERC_ABI } from "../constants";
-    import ROPSTEN_TOKEN_ADDR from "../constants/token";
+    import { TOKEN_ADDR } from "../constants/token";
     import tokenIcon from "@/imgs/token";
     export default {
         data() {
@@ -51,7 +51,7 @@
                 
                 let dseContract = this.$util.getContract(
                     this.web3Obj,
-                    ROPSTEN_TOKEN_ADDR.dse.addr,
+                    TOKEN_ADDR.dse.addr,
                     ERC_ABI
                 );
                 dseContract.methods
@@ -70,29 +70,11 @@
                         this.totalMoneyFromRule = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
                     });
 
-                    contract.methods.getInsuranceTotalMoneyForuser(this.account[0]).call().then(res => {
-                        this.moneyFromRule = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
-                    });
-            },
-            getContractDataCall(contract, methodsArr, index = 0) {
-                if (index > methodsArr.length - 1) {
-                    return;
-                }
-
-                let tokenId = SUPPORT_TOKEN_TYPE[methodsArr[index]];
-
-                contract.methods
-                    .getTokenPoolUserBalanceOf(this.account[0], tokenId)
-                    .call()
-                    .then((res) => {
-                        let result = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
-                        if (result > 0) {
-                            this.useInsureDesc[index].amount = result;
-                        }
-                        this.getContractDataCall(contract, methodsArr, ++index);
-                    });
-            },
-        },
+                contract.methods.getInsuranceTotalMoneyForuser(this.account[0]).call().then(res => {
+                    this.moneyFromRule = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
+                });
+            }
+        }
     };
 </script>
 

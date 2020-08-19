@@ -11,12 +11,6 @@
         <div class="amount">{{contractInfo.insureAmountEver}}</div>
       </div>
       <div class="fl">
-        <div class="title">{{$tc('insure.business.insureTitle', 2)}}</div>
-        <div class="amount">{{contractInfo.insureTimeEver}}</div>
-      </div>
-    </div>
-    <div class="nav clear">
-      <div class="fl">
         <div class="title">{{$tc('insure.business.insureTitle2', 1)}}</div>
         <div class="amount">{{contractInfo.rescueAmountEver}}</div>
       </div>
@@ -25,10 +19,24 @@
         <div class="amount">{{displayDES}}</div>
       </div>
       <!-- <div class="fl">
+        <div class="title">{{$tc('insure.business.insureTitle', 2)}}</div>
+        <div class="amount">{{contractInfo.insureTimeEver}}</div>
+      </div> -->
+    </div>
+    <!-- <div class="nav clear"> -->
+      <!-- <div class="fl">
+        <div class="title">{{$tc('insure.business.insureTitle2', 1)}}</div>
+        <div class="amount">{{contractInfo.rescueAmountEver}}</div>
+      </div>
+      <div class="fl">
+        <div class="title">{{$tc('insure.business.insureTitle2', 2)}}</div>
+        <div class="amount">{{displayDES}}</div>
+      </div> -->
+      <!-- <div class="fl">
           <div class="title">{{$tc('insure.business.insureTitle', 2)}}</div>
           <div class="amount">{{totalInsureAmount}}</div>
         </div> -->
-    </div>
+    <!-- </div> -->
     <!-- nav end -->
   </div>
 </template>
@@ -85,7 +93,6 @@ export default {
       }
 
       let option = METHOD_LIST[methodsArr[index]];
-
       contract.methods[methodsArr[index]]().call().then(res => {
         if(option.name == 'insureTimeEver') {
           accountInfo[option.name] = res;
@@ -103,7 +110,8 @@ export default {
 .nav {
     margin-top: 40px;
     >div {
-      width: 33.333%;
+      width: 25%;
+      text-align: center;
     }
     .title {
       font-size: 15px;

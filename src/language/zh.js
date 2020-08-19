@@ -31,14 +31,14 @@ module.exports = {
   },
   insure: {
     business: {
-      insureTitle: '投保资产(DAI) | 投保总资产(DAI) | 总投保次数',
-      insureTitle2: '补偿总金额(DAI) | 已被释放DSE',
+      insureTitle: '保险资产(DAI) | 保险总资产(DAI) | 总投保次数',
+      insureTitle2: '补偿总金额(DAI) | 已经产出DSE',
       useInsureTitle: "我的资料",
-      useInsureDesc: '我的投保金额 | 投保池金额 | 我的DSE',
+      useInsureDesc: '我的保险金额 | 投保池金额 | 我的DSE',
       insureBtn: '我要投保',
       clearBtn: '提取资产',
       insureDescTitle: '我的资产',
-      insureDescTb: '我的投保资产 | 金额'
+      insureDescTb: '我的保险资产 | 金额'
     },
     display: {
       title: '产品介绍 | 几种场景的说明',
@@ -55,7 +55,7 @@ module.exports = {
     login: {
       title: '提示',
       btn: "确定",
-      desc: '请确认安装metamask钱包并使用ropsten网络'
+      desc: '请确认安装metamask钱包并使用主网'
     },
     insure: {
       start: {

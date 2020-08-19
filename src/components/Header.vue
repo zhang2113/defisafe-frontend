@@ -5,7 +5,7 @@
       <span class="text">DefiSafe</span>
     </div>
     <div class="fr head-right">
-      <div class="version" @click='goLowVersion(item)' :class='{active: item == currentVersion}' v-for='item in version' :key='item'>{{item}}</div>
+      <!-- <div class="version" @click='goLowVersion(item)' :class='{active: item == currentVersion}' v-for='item in version' :key='item'>{{item}}</div> -->
       <div class="net-type" v-if='netType == "Ropsten"'>
         {{netType + ' ' + $t('insure.net')}}
       </div>

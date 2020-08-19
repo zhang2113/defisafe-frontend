@@ -54,7 +54,7 @@
           </div>
           <div class="flex-m">
             <span class="im-label"></span>
-            <input class="im-insure-input flex-1" @blur="changeInsure" v-model="insure" type="text" placeholder='投保金额>10.00'>
+            <input class="im-insure-input flex-1" @keyup.enter='changeInsure' @blur="changeInsure" v-model="insure" type="text" placeholder='投保金额>10.00'>
             <span class="im-dai-label">dai</span>
           </div>
         </div>
@@ -115,7 +115,7 @@
   import TokenList from "../../components/TokenList.vue";
   import UserAmount from "../../components/UserAmount.vue";
   import contract from "@/util/contract";
-  import ROPSTEN_TOKEN_ADDR from "../../constants/token";
+  import { TOKEN_ADDR } from "../../constants/token";
   import { moneyType } from "@/util/type";
   import tokenIcon from "@/imgs/token";
   import {
@@ -160,7 +160,7 @@
       UserAmount,
     },
     created() {
-      let constractKeys = Object.keys(contract);
+      let constractKeys = Object.keys(DEFISAFE_CONSTRACT);
       this.versionArr = constractKeys;
       if (sessionStorage.version) {
         this.currentVersion = sessionStorage.version;
@@ -225,7 +225,7 @@
           ct.methods
             .getPriceTokenToToken(
               DAI_CONTRACT.addr,
-              ROPSTEN_TOKEN_ADDR[contractKey].addr,
+              TOKEN_ADDR[contractKey].addr,
               insureAmount
             )
             .call()
@@ -248,7 +248,7 @@
         let useAccount = await window.ethereum.request({ method: 'eth_accounts' });
         this.account = useAccount[0];
         let netType = window.ethereum.networkVersion;
-        if ((netType != 3) || !hasInstallWallet || !this.account) {
+        if ((netType != 1) || !hasInstallWallet || !this.account) {
           this.$router.push('/login');
           return;
         }
@@ -269,7 +269,7 @@
           if (!accounts.length) {
             this.$router.push("/login");
           } else {
-            this.getData && this.getData();
+            this.updateData && this.updateData();
           }
         });
       },
@@ -338,7 +338,7 @@
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = this.$util.getContract(
           this.web3Obj,
-          ROPSTEN_TOKEN_ADDR[contractKey].addr,
+          TOKEN_ADDR[contractKey].addr,
           ERC_ABI
         );
 
@@ -651,7 +651,7 @@
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = this.$util.getContract(
           this.web3Obj,
-          ROPSTEN_TOKEN_ADDR[contractKey]["addr"],
+          TOKEN_ADDR[contractKey]["addr"],
           ERC_ABI
         );
 
@@ -708,13 +708,6 @@
       //get page data
       async getData() {
         window._czc.push(["_trackEvent", "加载", "投保页面打开次数"]);
-        setTimeout(() => {
-          console.log(this.myContract)
-        this.myContract.methods.getPlatformCost().call().then(res => {
-          console.log('-------------------1-------', res)
-        });
-        }, 1000)
-        
       },
       changeToken(val) {
         this.calcPrice();
