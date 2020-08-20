@@ -1,5 +1,5 @@
 
-export const CURRENT_NET = 'ROPSTEN';
+export const CURRENT_NET = 'MAIN';
 
 export const NET_IDS = {
   1: 'MAIN',
@@ -7,7 +7,7 @@ export const NET_IDS = {
 }
 
 export const MINE_CONTRACT = {
-  MAIN: '0x1961D70E620019104f9a1A21d430a1DbD9c31C75',
+  MAIN: '0x388F5763A9aF23845828AC1aF7C37298Edf9aD6e',
   ROPSTEN: '0xd3569128c489b440c1b084b9f423545c356bf75e',
   abi: [
     {
