@@ -15,6 +15,7 @@
 </template>
 
 <script>
+  import { NET_IDS, CURRENT_NET } from '../../constants';
   export default {
     data() {
       return {
@@ -33,7 +34,7 @@
           let netType = await ethereum.request({ method: 'net_version' });
 
           // Determine the current network type
-          if ((netType == 1) && isLogin[0]) {
+          if ((NET_IDS[netType] == CURRENT_NET) && isLogin[0]) {
             this.$router.replace('/insure');
           }
         }
@@ -46,7 +47,7 @@
 
         let netType = window.ethereum.networkVersion;
 
-        if (netType != 1) {
+        if (NET_IDS[netType] != CURRENT_NET) {
           this.$alert(this.$t('modal.login.desc'), this.$t('modal.login.title'), {
             confirmButtonText: this.$t('modal.login.btn')
           });

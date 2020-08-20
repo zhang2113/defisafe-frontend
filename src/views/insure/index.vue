@@ -115,16 +115,17 @@
   import TokenList from "../../components/TokenList.vue";
   import UserAmount from "../../components/UserAmount.vue";
   import contract from "@/util/contract";
-  import { TOKEN_ADDR } from "../../constants/token";
+  import { TOKEN_CONTRACT } from "../../constants/token";
   import { moneyType } from "@/util/type";
   import tokenIcon from "@/imgs/token";
   import {
-    MINE_CONTRACT,
+    NET_IDS,
     PRICE_PREDICT,
     ERC_ABI,
     DAI_CONTRACT,
     DEFISAFE_CONSTRACT,
-    SUPPORT_TOKEN_TYPE
+    SUPPORT_TOKEN_TYPE,
+    CURRENT_NET
   } from "../../constants";
   export default {
     data() {
@@ -202,7 +203,7 @@
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = this.$util.getContract(
           this.web3Obj,
-          PRICE_PREDICT.addr,
+          PRICE_PREDICT[CURRENT_NET],
           PRICE_PREDICT.abi
         );
         let insureAmount = this.transferToBn(this.insure);
@@ -213,7 +214,7 @@
         
         if (this.mtype == 1) {
           ct.methods
-            .getPriceTokenToEth(DAI_CONTRACT.addr)
+            .getPriceTokenToEth(DAI_CONTRACT[CURRENT_NET])
             .call()
             .then((res) => {
               this.depositTotal = deposit * this.transferFromWei(res);
@@ -224,8 +225,8 @@
         } else {
           ct.methods
             .getPriceTokenToToken(
-              DAI_CONTRACT.addr,
-              TOKEN_ADDR[contractKey].addr,
+              DAI_CONTRACT[CURRENT_NET],
+              TOKEN_CONTRACT[CURRENT_NET][contractKey].addr,
               insureAmount
             )
             .call()
@@ -248,7 +249,7 @@
         let useAccount = await window.ethereum.request({ method: 'eth_accounts' });
         this.account = useAccount[0];
         let netType = window.ethereum.networkVersion;
-        if ((netType != 1) || !hasInstallWallet || !this.account) {
+        if ((NET_IDS[netType] != CURRENT_NET) || !hasInstallWallet || !this.account) {
           this.$router.push('/login');
           return;
         }
@@ -256,13 +257,13 @@
         this.account = window.ethereum.selectedAddress;
         this.daiContract = this.$util.getContract(
           this.web3Obj,
-          DAI_CONTRACT.addr,
+          DAI_CONTRACT[CURRENT_NET],
           ERC_ABI
         );
         this.myContract = this.$util.getContract(
           this.web3Obj,
-          DEFISAFE_CONSTRACT.v1.addr,
-          DEFISAFE_CONSTRACT.v1.abi
+          DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET],
+          DEFISAFE_CONSTRACT[this.currentVersion].abi
         );
 
         window.ethereum.on("accountsChanged", (accounts) => {
@@ -338,7 +339,7 @@
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = this.$util.getContract(
           this.web3Obj,
-          TOKEN_ADDR[contractKey].addr,
+          TOKEN_CONTRACT[CURRENT_NET][contractKey].addr,
           ERC_ABI
         );
 
@@ -349,7 +350,7 @@
         let insureAmount = this.transferToBn(this.insure);
         let approveBigNum = this.transferToBn(this.depositTotal);
         let daiAllow = await this.daiContract.methods
-          .allowance(this.account, DEFISAFE_CONSTRACT[this.currentVersion].addr)
+          .allowance(this.account, DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET])
           .call({ from: this.account });
         if (this.mtype == 1) {
           //eth
@@ -366,13 +367,13 @@
       insureEth(daiAllow, insureAmount, approveBigNum) {
         if (daiAllow != 0) {
           this.daiContract.methods
-            .approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, 0)
+            .approve(DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET], 0)
             .send({ from: this.account })
             .on("transactionHash", this.txCallback)
             .on("receipt", async (receipt) => {
               this.daiContract.methods
                 .approve(
-                  DEFISAFE_CONSTRACT[this.currentVersion].addr,
+                  DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET],
                   insureAmount
                 )
                 .send({ from: this.account })
@@ -410,7 +411,7 @@
             .on("error", this.txErrorCallback);
         } else {
           this.daiContract.methods
-            .approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, insureAmount)
+            .approve(DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET], insureAmount)
             .send({ from: this.account })
             .on("transactionHash", this.txCallback)
             .on("receipt", async (receipt) => {
@@ -443,29 +444,29 @@
       },
       async insureERCWithApprove(ct, insureAmount, approveBigNum) {
         this.daiContract.methods
-          .approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, 0)
+          .approve(DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET], 0)
           .send({ from: this.account })
           .on("transactionHash", this.txCallback)
           .on("receipt", async (receipt) => {
             this.daiContract.methods
-              .approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, insureAmount)
+              .approve(DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET], insureAmount)
               .send({ from: this.account })
               .on("receipt", async (receipt) => {
                 let checkRes = await ct.methods
                   .allowance(
                     this.account,
-                    DEFISAFE_CONSTRACT[this.currentVersion].addr
+                    DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET]
                   )
                   .call({ from: this.account });
                 if (checkRes != 0) {
                   //approve
                   ct.methods
-                    .approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, 0)
+                    .approve(DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET], 0)
                     .send({ from: this.account })
                     .on("receipt", async (receipt) => {
                       ct.methods
                         .approve(
-                          DEFISAFE_CONSTRACT[this.currentVersion].addr,
+                          DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET],
                           approveBigNum
                         )
                         .send({ from: this.account })
@@ -500,7 +501,7 @@
                 } else {
                   ct.methods
                     .approve(
-                      DEFISAFE_CONSTRACT[this.currentVersion].addr,
+                      DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET],
                       approveBigNum
                     )
                     .send({ from: this.account })
@@ -538,25 +539,25 @@
       },
       async insureERC(ct, insureAmount, approveBigNum) {
         this.daiContract.methods
-          .approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, insureAmount)
+          .approve(DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET], insureAmount)
           .send({ from: this.account })
           .on("transactionHash", this.txCallback)
           .on("receipt", async (receipt) => {
             let checkRes = await ct.methods
               .allowance(
                 this.account,
-                DEFISAFE_CONSTRACT[this.currentVersion].addr
+                DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET]
               )
               .call({ from: this.account });
             if (checkRes != 0) {
               //approve
               ct.methods
-                .approve(DEFISAFE_CONSTRACT[this.currentVersion].addr, 0)
+                .approve(DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET], 0)
                 .send({ from: this.account })
                 .on("receipt", async (receipt) => {
                   ct.methods
                     .approve(
-                      DEFISAFE_CONSTRACT[this.currentVersion].addr,
+                      DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET],
                       approveBigNum
                     )
                     .send({ from: this.account })
@@ -591,7 +592,7 @@
             } else {
               ct.methods
                 .approve(
-                  DEFISAFE_CONSTRACT[this.currentVersion].addr,
+                  DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET],
                   approveBigNum
                 )
                 .send({ from: this.account })
@@ -651,7 +652,7 @@
         let contractKey = this.findKeyByValue(this.mtypes, this.mtype);
         let ct = this.$util.getContract(
           this.web3Obj,
-          TOKEN_ADDR[contractKey]["addr"],
+          TOKEN_CONTRACT[CURRENT_NET][contractKey]["addr"],
           ERC_ABI
         );
 

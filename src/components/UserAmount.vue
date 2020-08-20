@@ -24,8 +24,8 @@
 </template>
 
 <script>
-    import { DEFISAFE_CONSTRACT, ERC_ABI } from "../constants";
-    import { TOKEN_ADDR } from "../constants/token";
+    import { DEFISAFE_CONSTRACT, ERC_ABI, CURRENT_NET } from "../constants";
+    import { TOKEN_CONTRACT } from "../constants/token";
     import tokenIcon from "@/imgs/token";
     export default {
         data() {
@@ -33,11 +33,18 @@
                 userDSE: 0,
                 totalMoneyFromRule: 0,
                 moneyFromRule: 0,
-                account: ""
+                account: "",
+                currentVersion: ''
             };
         },
         inject: ["web3Obj"],
         async created() {
+            let constractKeys = Object.keys(DEFISAFE_CONSTRACT);
+            if (sessionStorage.version) {
+                this.currentVersion = sessionStorage.version;
+            } else {
+                this.currentVersion = constractKeys[0];
+            }
             this.account = await window.ethereum.request({ method: 'eth_accounts' });
             this.getData();
         },
@@ -45,13 +52,13 @@
             getData() {
                 let contract = this.$util.getContract(
                     this.web3Obj,
-                    DEFISAFE_CONSTRACT.v1.addr,
-                    DEFISAFE_CONSTRACT.v1.abi
+                    DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET],
+                    DEFISAFE_CONSTRACT[this.currentVersion].abi
                 );
-                
+
                 let dseContract = this.$util.getContract(
                     this.web3Obj,
-                    TOKEN_ADDR.dse.addr,
+                    TOKEN_CONTRACT[CURRENT_NET].dse.addr,
                     ERC_ABI
                 );
                 dseContract.methods
@@ -62,7 +69,7 @@
                             this.userDSE = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
                         }
                     });
-                    
+
                 contract.methods
                     .getInsurancePoolBalanceOf()
                     .call()

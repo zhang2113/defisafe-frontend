@@ -23,26 +23,33 @@
 </template>
 
 <script>
-    import { DEFISAFE_CONSTRACT, SUPPORT_TOKEN_TYPE } from '../constants';
+    import { DEFISAFE_CONSTRACT, SUPPORT_TOKEN_TYPE, CURRENT_NET } from '../constants';
     import tokenIcon from '@/imgs/token';
     export default {
         data() {
             return {
                 useInsureDesc: [],
                 account: '',
-                tokenIcon: tokenIcon
+                tokenIcon: tokenIcon,
+                currentVersion: ''
             }
         },
         inject: ['web3Obj'],
         async created() {
+            let constractKeys = Object.keys(DEFISAFE_CONSTRACT);
+            if (sessionStorage.version) {
+                this.currentVersion = sessionStorage.version;
+            } else {
+                this.currentVersion = constractKeys[0];
+            }
             this.account = await ethereum.request({ method: 'eth_accounts' });
             this.getData();
         },
         methods: {
             getData() {
-                let contract = this.$util.getContract(this.web3Obj, DEFISAFE_CONSTRACT.v1.addr, DEFISAFE_CONSTRACT.v1.abi);
+                let contract = this.$util.getContract(this.web3Obj, DEFISAFE_CONSTRACT[this.currentVersion][CURRENT_NET], DEFISAFE_CONSTRACT[this.currentVersion].abi);
                 let methodsArr = Object.keys(SUPPORT_TOKEN_TYPE);
-                this.useInsureDesc = methodsArr.map(e => {return {type: e, amount: 0}});
+                this.useInsureDesc = methodsArr.map(e => { return { type: e, amount: 0 } });
 
                 this.getContractDataCall(contract, methodsArr);
             },
@@ -55,8 +62,8 @@
 
                 contract.methods.getTokenPoolUserBalanceOf(this.account[0], tokenId).call().then(res => {
                     let result = parseFloat(this.web3Obj.utils.fromWei(res)).toFixed(4);
-                    if(result > 0) {
-                        this.useInsureDesc[index].amount = result;  
+                    if (result > 0) {
+                        this.useInsureDesc[index].amount = result;
                     }
                     this.getContractDataCall(contract, methodsArr, ++index);
                 });
@@ -68,40 +75,49 @@
 <style lang='scss' scoped>
     .account-type {
         margin-top: 30px;
-       .account-list {
-         background: #fff;
-         padding: 15px;
-         border-radius: 6px;
-         box-shadow:0px 1px 24px 0px rgba(176,192,237,0.42);
-         .a-head {
-           font-size: 14px;
-           line-height: 50px;
-         }
-         .a-item {
-           border-bottom: 1px solid #D6D9E0;
-           height: 50px;
-           &:last-child {
-             border-color: transparent;
-           }
-           .left-name {
-             padding: 9px 0;
-             >* {
-               vertical-align: middle;
-             }
-             img {
-               width: 32px;
-               height: 32px;
-               margin-right: 15px;
-             }
-             .w {
-               color: #ADB5C7;
-             }
-           }
-           .amount {
-             line-height: 50px;
-             text-align: right;
-           }
-         }
-       }
-      }
+
+        .account-list {
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0px 1px 24px 0px rgba(176, 192, 237, 0.42);
+
+            .a-head {
+                font-size: 14px;
+                line-height: 50px;
+            }
+
+            .a-item {
+                border-bottom: 1px solid #D6D9E0;
+                height: 50px;
+
+                &:last-child {
+                    border-color: transparent;
+                }
+
+                .left-name {
+                    padding: 9px 0;
+
+                    >* {
+                        vertical-align: middle;
+                    }
+
+                    img {
+                        width: 32px;
+                        height: 32px;
+                        margin-right: 15px;
+                    }
+
+                    .w {
+                        color: #ADB5C7;
+                    }
+                }
+
+                .amount {
+                    line-height: 50px;
+                    text-align: right;
+                }
+            }
+        }
+    }
 </style>
