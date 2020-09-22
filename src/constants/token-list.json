@@ -1,0 +1,25 @@
+{
+    "name": "DSE",
+    "logoURI": "https://raw.githubusercontent.com/defisafe/DefiSafeOfficialWebsite/master/src/imgs/logo.png",
+    "keywords": [
+        "defi",
+        "DEFI",
+        "yield"
+      ],
+      "timestamp": "2020-09-22T01:40:34.305Z",
+      "tokens": [
+        {
+        "chainId": 1,
+        "address": "0x2a0d283b509e6eef294233031763ba5086373378",
+        "name": "DSE",
+        "symbol": "DSE",
+        "decimals": 18,
+        "logoURI": "https://raw.githubusercontent.com/defisafe/DefiSafeOfficialWebsite/master/src/imgs/logo.png"
+        }
+      ],
+      "version": {
+        "major": 0,
+        "minor": 0,
+        "patch": 0
+      }
+  }
